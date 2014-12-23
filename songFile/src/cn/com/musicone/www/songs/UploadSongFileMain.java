@@ -34,11 +34,8 @@ public class UploadSongFileMain {
 			logger.error(e.getMessage(),e);
 		}
 		MybatisUtil.init();
-//		long start = System.currentTimeMillis();
-//		uploadFile();
-//		long end = System.currentTimeMillis();
-//		System.out.println("cost times :: " + (end - start) + " ms ");
-		uploadDataTimer();
+//		uploadDataTimer();
+		uploadFile();
 	}
 	public static void uploadDataTimer(){
 		Timer timer = new Timer("TIMER-UPLOADFILE");
@@ -53,24 +50,34 @@ public class UploadSongFileMain {
 	
 	public static void uploadFile(){
 		List<SongPlayFile> files = null;
-		try{
-			files = songPlayFileService.listFiles();
-		}catch(Exception e){
-			logger.error("获取数据上传到阿里云发生异常");
-			logger.error(e.getMessage(),e);
-			return;
+		while(true){
+			try{
+				files = songPlayFileService.listFiles();
+			}catch(Exception e){
+				logger.error("获取数据上传到阿里云发生异常");
+				logger.error(e.getMessage(),e);
+				try {
+					Thread.sleep(60000);
+				} catch (InterruptedException e1) {
+					logger.error(e1.getMessage(),e1);
+				}
+				continue;
+			}
+			if(files == null){
+				return;
+			}
+			toDoSongFile(files);
 		}
-		if(files == null){
-			return;
-		}
+	}
+	public static void toDoSongFile(List<SongPlayFile> files){
 		for (SongPlayFile songPlayFile : files) {
 			if(songPlayFile == null){
 				continue;
 			}
-			logger.debug("开始处理文件 ::: " + songPlayFile);
+			logger.debug("开始处理文件 ::: " + songPlayFile.getAliyunKey());
 			String localPath = songPlayFile.getLocalPath();
 			if(StringUtil.isBlank(localPath)){
-				logger.debug("文件上传失败,本地路径为空 ::: " + songPlayFile);
+				logger.debug("文件上传失败,本地路径为空 ::: " + songPlayFile.getAliyunKey());
 				continue;
 			}
 			uploadFileToOSS(songPlayFile);
@@ -101,7 +108,7 @@ public class UploadSongFileMain {
 				}
 			}
 			if(valiDateFailFlag){
-				logger.error(remark + " " + songPlayFile);
+				logger.error(remark + " " + key);
 				songPlayFile.setStatus(4); //// 待审核
 				songPlayFile.setBak1(remark);
 				songPlayFileService.updateFileStatus(songPlayFile);
@@ -119,7 +126,7 @@ public class UploadSongFileMain {
 			}
 			songPlayFileService.updateFileStatus(songPlayFile);
 		}catch(Exception e){
-			logger.error("处理文件失败::: " + songPlayFile);
+			logger.error("处理文件失败::: " + songPlayFile.getAliyunKey());
 			logger.error(e.getMessage(),e);
 		}
 	}
