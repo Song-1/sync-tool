@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="SongPlayFile" type="com.song1.www.songs.pojo.SongPlayFile" />
+	</typeAliases>
+
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://127.0.0.1:3306/music_test" />
+				<property name="username" value="root" />
+				<property name="password" value="root" />
+			</dataSource>
+			<!-- <dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://112.124.44.10:3306/song_tool" />
+				<property name="username" value="songonetool" />
+				<property name="password" value="songonetool" />
+			</dataSource> -->
+		</environment>
+	</environments>
+
+	<mappers>
+		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/SongPlayFileQueryDaoImpl.xml" />
+	</mappers>
+</configuration>

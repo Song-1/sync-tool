@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.songone.www.songs.dao.mybatis.SongPlayFileQueryDao">
+	<sql id="songFileData">
+		songfile.id as id,
+		songfile.md5 as md5,
+		songfile.aliyun_key as aliyunKey,
+		songfile.local_path as localPath,
+		songfile.type as type,
+		songfile.song_id as songId,
+		songfile.rate as rate,
+		songfile.remark as remark,
+		songfile.bak as bak,
+		songfile.bak1 as bak1,
+		songfile.status as status
+	</sql>
+	
+	<select id="listFilesToUpload" resultType="SongPlayFile">
+		select <include refid="songFileData"/>
+		from ct_file songfile
+		where songfile.status = 7
+		limit 0,100
+	</select>
+	
+	<update id="updateFileStatus" parameterType="SongPlayFile">
+		update ct_file songfile
+		<set>
+			songfile.status = #{status},
+			songfile.bak1 = #{bak1}
+		</set>
+		where songfile.id = #{id}
+	</update>
+
+
+</mapper>
