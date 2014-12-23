@@ -47,8 +47,9 @@ public class MultipartLocalFileUpload {
 	private int CONCURRENCIES = AliyunOSSUtil.CONCURRENCIES;
 	protected List<PartETag> eTags = new ArrayList<PartETag>();
 	protected String uploadId;
-	private int reUploadPartCounts = 3;
+	private int reUploadPartCounts = AliyunOSSUtil.RE_CONNECT_COUNTS;
 	private int reuploadFile = 0;
+	private int partCount = 0;
 
 	public MultipartLocalFileUpload() {
 	}
@@ -100,31 +101,64 @@ public class MultipartLocalFileUpload {
 		if (!flag) {
 			return false;
 		}
+		// /// 判断文件是否存在阿里云
 		try {
 			flag = AliyunOSSUtil.isExistObject(bucket, key);
-			if(flag){
+			if (flag) {
 				message = "文件已经存在";
 				return true;
 			}
-			int partCount = (int) (file.length() / partSize);
-			if ((file.length() % partSize) != 0) {
-				partCount++;
-			}
-			if (partCount <= 1) {
-				message = "文件小于分块大小,采用put上传";
+		} catch (ClientException e) {
+			message = "网络连接异常";
+			logger.error(e.getMessage(), e);
+			return false;
+		} catch (OSSException e) {
+			message = e.getRequestId() + ":: " + e.getErrorCode() + ":"
+					+ e.getMessage();
+			logger.error(message, e);
+			return false;
+		}
+		partCount = (int) (file.length() / partSize);
+		if ((file.length() % partSize) != 0) {
+			partCount++;
+		}
+		if (partCount <= 1) {
+			message = "文件小于分块大小,采用单文件上传";
+			try {
 				AliyunOSSUtil.uploadFile(bucket, key, file, null, md5);
-				return true;
-			}
-			// // 获取Oss客户端
-			OSS client = AliyunOSSUtil.getOSSClient();
-			ObjectMetadata objectMetadata = createObjectMetadata();
-			uploadId = MultipartUploadUtil
-					.createOrGetMultipartUploadRequest(client, bucket, key,
-							objectMetadata, true);
-			if (StringUtils.isBlank(uploadId)) {
-				message = "获取OSS上传事件的uploadId为空";
+			} catch (OSSException e) {
+				message += e.getRequestId() + ":: " + e.getErrorCode() + ":"
+						+ e.getMessage();
+				logger.error(message, e);
+				return false;
+			} catch (FileNotFoundException e) {
+				message += e.getMessage();
+				logger.error(message, e);
+				return false;
+			} catch (ClientException e) {
+				message += "网络连接异常";
+				logger.error(message, e);
+				return false;
+			} catch (IOException e) {
+				message += e.getMessage();
+				logger.error(message, e);
+				return false;
+			} catch (Exception e) {
+				message += e.getMessage();
+				logger.error(message, e);
 				return false;
 			}
+			return true;
+		}
+		// // 获取Oss客户端
+		OSS client = AliyunOSSUtil.getOSSClient();
+		ObjectMetadata objectMetadata = createObjectMetadata();
+		uploadId = MultipartUploadUtil.createOrGetMultipartUploadRequest(client, bucket, key, objectMetadata, true);
+		if (StringUtils.isBlank(uploadId)) {
+			message = "获取OSS上传事件的uploadId为空";
+			return false;
+		}
+		try {
 			uploadPart(partCount, client);
 		} catch (Exception e) {
 			message = e.getMessage();
@@ -133,19 +167,23 @@ public class MultipartLocalFileUpload {
 		}
 		return true;
 	}
-	
-	public void uploadPart(int partCount,OSS client)throws Exception{
+
+	public void uploadPart(int partCount, OSS client) throws Exception {
+		if (reuploadFile > reUploadPartCounts) {
+			throw new Exception(" == 已经重试分块上传 " + reUploadPartCounts +" 次  失败   ==");
+		}
+		logger.debug("== 文件块的上传线程池  已经准备  == ");
 		eTags = new ArrayList<PartETag>();
-		List<PartSummary> parts = MultipartUploadUtil.getPartList(client, bucket, key, uploadId);
 		ExecutorService pool = Executors.newFixedThreadPool(CONCURRENCIES);
-		partsLoop : for (int i = 0; i < partCount; i++) {
+		List<PartSummary> parts = MultipartUploadUtil.getPartList(client,bucket, key, uploadId);
+		partsLoop: for (int i = 0; i < partCount; i++) {
 			int partNumber = i + 1;
-			if(parts != null){
-				for(PartSummary part : parts){
-					if(part == null){
+			if (parts != null) {
+				for (PartSummary part : parts) {
+					if (part == null) {
 						continue;
 					}
-					if(part.getPartNumber() == partNumber){
+					if (part.getPartNumber() == partNumber) {
 						PartETag ee = new PartETag(partNumber, part.getETag());
 						eTags.add(ee);
 						continue partsLoop;
@@ -158,33 +196,30 @@ public class MultipartLocalFileUpload {
 			UploadPartThread uploadRunnable = new UploadPartThread(client,partNumber, startSize, size);
 			pool.execute(uploadRunnable);
 		}
-		new Thread(new SystemOutUploadFileThread(partCount)).start();
+		logger.debug("== 文件块的上传线程已经放入线程池 == ");
 		pool.shutdown();
 		while (!pool.isTerminated()) {
 			try {
 				pool.awaitTermination(5, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
-				logger.error(e.getMessage(),e);
+				logger.error(e.getMessage(), e);
 			}
 		}
-		if (eTags.size() != partCount )
-        {
-           if(reuploadFile <= reUploadPartCounts){
-        	   reuploadFile ++;
-        	   uploadPart(partCount, client);
-           }else{
-        	   throw new IllegalStateException("Multipart上传失败，有Part未上传成功。");
-	       }
-        }
-		try{
-			MultipartUploadUtil.completeMultipartUpload(client, bucket, key, uploadId, eTags);
-		}catch(ClientException e){
-			if(reuploadFile <= reUploadPartCounts){
-        	   reuploadFile ++;
-        	   uploadPart(partCount, client);
-            }else{
-        	   throw e;
-	        }
+		logger.debug("== 文件块的上传线程池  已经关闭  == ");
+		if (eTags.size() != partCount) {
+			reuploadFile++;
+			uploadPart(partCount, client);
+		}else{
+			try {
+				MultipartUploadUtil.completeMultipartUpload(client, bucket, key,uploadId, eTags);
+			} catch (ClientException e) {
+				logger.error("完成文件上传事件发生网络异常,再次尝试中.................");
+				uploadPart(partCount, client);
+			} catch (OSSException e){
+				throw e;
+			} catch (Exception e){
+				throw e;
+			}
 		}
 	}
 
@@ -193,7 +228,8 @@ public class MultipartLocalFileUpload {
 		private long size;
 		private int partId;
 		private OSS client;
-		private int reUploadTimes = 0;
+//		private int reUploadTimes = 0;
+		private String partName ;
 
 		public UploadPartThread(OSS client, int partId, long start,
 				long partSize) {
@@ -201,28 +237,28 @@ public class MultipartLocalFileUpload {
 			this.size = partSize;
 			this.partId = partId;
 			this.client = client;
+			this.partName = "part :: " + partId + " :: ";
 		}
-
-		public void uploadImpl(UploadPartRequest uploadPartRequest)
-				throws OSSException, ClientException, Exception {
-			try {
-				UploadPartResult uploadPartResult = client
-						.uploadPart(uploadPartRequest);
-				eTags.add(uploadPartResult.getPartETag());
-			} catch (ClientException e) {
-				if (reUploadTimes > reUploadPartCounts) {
-					throw new Exception(" == oss client Exception 网络连接异常 ,已经重试3次失败  ==");
-				}
-				Thread.sleep(10000);
-				reUploadTimes++;
-				uploadImpl(uploadPartRequest);
-			} catch (OSSException e) {
-				throw e;
-			}
-		}
+//
+//		public void uploadImpl(InputStream in )
+//				throws OSSException, ClientException, Exception {
+//			if (reUploadTimes > reUploadPartCounts) {
+//				throw new Exception(" == oss client Exception 网络连接异常 ,已经重试3次失败  ==");
+//			}
+//			
+//			try {
+//				
+//			} catch (ClientException e) {
+//			} catch (OSSException e) {
+//				throw e;
+//			} catch (Exception e) {
+//				throw e;
+//			}
+//		}
 
 		@Override
 		public void run() {
+			logger.debug(partName +  "开始上传..............");
 			long startTime = System.currentTimeMillis();
 			InputStream in = null;
 			try {
@@ -235,21 +271,27 @@ public class MultipartLocalFileUpload {
 				uploadPartRequest.setInputStream(in);
 				uploadPartRequest.setPartSize(size);
 				uploadPartRequest.setPartNumber(partId);
-				uploadImpl(uploadPartRequest);
-				//UploadPartResult uploadPartResult = client.uploadPart(uploadPartRequest);
-				//eTags.add(uploadPartResult.getPartETag());
+				UploadPartResult uploadPartResult = client.uploadPart(uploadPartRequest);
+				logger.debug(partName +  "结束上传..............");
+				eTags.add(uploadPartResult.getPartETag());
 			} catch (FileNotFoundException e) {
-				logger.error(e.getMessage(), e);
+				logger.error(partName + e.getMessage(), e);
 			} catch (IOException e) {
-				logger.error(e.getMessage(), e);
+				logger.error(partName + e.getMessage(), e);
+			} catch (ClientException e) {
+				logger.error(partName + " == 网络连接异常  == " + e.getMessage(), e);
+			} catch (OSSException e) {
+				String msg = partName;
+				msg+= e.getRequestId() + ":: " + e.getErrorCode() + ":"+ e.getMessage();
+				logger.error(msg, e);
 			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
+				logger.error(partName + e.getMessage(), e);
 			} finally {
 				if (in != null) {
 					try {
 						in.close();
 					} catch (IOException e) {
-						logger.error(e.getMessage(), e);
+						logger.error(partName + e.getMessage(), e);
 					} finally {
 						in = null;
 					}
@@ -259,37 +301,10 @@ public class MultipartLocalFileUpload {
 			long times = (endtTime - startTime) / 1000L;
 			times = times == 0 ? 1 : times;
 			long curPartSize = size / 1024;
-			logger.debug("part :: " + partId + " size :: " + curPartSize + "  times ::: " + times + " speed:::" + (curPartSize / times) + "kb/s");
-		}
-	}
-	
-	/**
-	 * 打印进度信息
-	 * 
-	 * @author Administrator
-	 *
-	 */
-	private class SystemOutUploadFileThread implements Runnable {
-
-		private int partCount;
-
-		SystemOutUploadFileThread(int partCount) {
-			this.partCount = partCount;
-		}
-
-		@Override
-		public void run() {
-			int outStr = -1;
-			while (eTags.size() != partCount) {
-				int p = (eTags.size() * 100) / partCount;
-				if (outStr == p) {
-					continue;
-				} else {
-					outStr = p;
-					logger.debug(outStr + "%  " + message);
-				}
-
-			}
+			int p = partCount > 0 ? (eTags.size() * 100) / partCount : 0;
+			logger.debug( partName + " size :: " + curPartSize
+					+ "  times ::: " + times + " speed:::"
+					+ (curPartSize / times) + "kb/s  " + p + "%");
 		}
 	}
 

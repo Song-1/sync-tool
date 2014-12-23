@@ -37,6 +37,7 @@ public class AliyunOSSUtil {
 	protected static String OSS_BUCKET = "cherrytime";
 	public static long PART_SIZE = 512 * 1024L; // 每个Part的大小，最小为1MB
 	public static int CONCURRENCIES = 20; // 上传Part的并发线程数。
+	public static int RE_CONNECT_COUNTS = 3;
 
 	protected static boolean isInitFlag = false;
 
@@ -49,20 +50,23 @@ public class AliyunOSSUtil {
 			OSS_BUCKET = p.getProperty("aliyun.oss.bucket");
 			String partSizeStr =  p.getProperty("aliyun.oss.multipart.upload.partsize");
 			String concurrencies =  p.getProperty("aliyun.oss.multipart.upload.concurrencies");
+			String re_connect_counts =  p.getProperty("aliyun.oss.client.exception.re.connect.counts");
 			long partSize = StringUtil.formateLongStr(partSizeStr);
 			int threads = StringUtil.formateIntStr(concurrencies);
+			int reConnectCounts = StringUtil.formateIntStr(re_connect_counts);
 			PART_SIZE = partSize == 0L ? PART_SIZE : partSize;
 			CONCURRENCIES = threads == 0 ? CONCURRENCIES : threads;
+			RE_CONNECT_COUNTS = reConnectCounts == 0 ? RE_CONNECT_COUNTS : reConnectCounts;
 			initClient();
 		}
 	}
 	
 	protected static void initClient(){
 		ClientConfiguration config = new ClientConfiguration();
-		config.setSocketTimeout(300000);
-		config.setMaxErrorRetry(10);
-		config.setConnectionTimeout(120000);
-//		config.setMaxConnections(1000); ///http最大连接数据
+		config.setSocketTimeout(30000);
+		config.setMaxErrorRetry(3);
+		config.setConnectionTimeout(30000);
+		config.setMaxConnections(100); ///http最大连接数据
 		client = new OSSClient(OSS_ENDPOINT, ACCESS_ID, ACCESS_KEY,config);
 		isInitFlag = true;
 	}
@@ -77,7 +81,9 @@ public class AliyunOSSUtil {
 	public static String getDeafultBucket(){
 		return OSS_BUCKET;
 	}
-	
+	public static boolean isExistObject(String bucket, String key)throws ClientException,OSSException{
+		return isExistObject(bucket, key, 0);
+	}
 	/**
 	 * 判断阿里云服务器指定bucket下面是否存在此key值的文件 .<br>
 	 * 
@@ -85,7 +91,7 @@ public class AliyunOSSUtil {
 	 * @param key
 	 * @return
 	 */
-	public static boolean isExistObject(String bucket, String key){
+	public static boolean isExistObject(String bucket, String key,int times)throws ClientException,OSSException{
 		if (!isInitFlag) {
 			initClient();
 		}
@@ -98,8 +104,12 @@ public class AliyunOSSUtil {
 				flag = false;
 				return flag;
 			}
+			throw e;
 		} catch (ClientException e) {
-			logger.error(e.getMessage(),e);
+			if(times > RE_CONNECT_COUNTS){
+				throw e;
+			}
+			isExistObject(bucket, key,times + 1);
 		}
 		return flag;
 	}
@@ -119,7 +129,7 @@ public class AliyunOSSUtil {
 	 * 
 	 */
 	public static PutObjectResult uploadFile(String bucket,String key, File file,
-			String contentType, String md5Value) throws Exception {
+			String contentType, String md5Value) throws IOException,FileNotFoundException,OSSException,ClientException,Exception {
 		if (file == null) {
 			return null;
 		}
