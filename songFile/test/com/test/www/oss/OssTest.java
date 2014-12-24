@@ -37,7 +37,7 @@ public class OssTest {
 		long start = System.currentTimeMillis();
 		String path = "E:/13716743108169350_hd.mp3";
 		File file = new File(path);
-		String key = "songs/liuzd_test/hell0006.mp3";
+		String key = "songs/liuzd_test/hell0007.mp3";
 		String md5Value = BaseMD5Util.getMd5ByFile(file);
 		MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(AliyunOSSUtil.getDeafultBucket(), key, md5Value, file);
 		boolean flag = partUpload.upload();

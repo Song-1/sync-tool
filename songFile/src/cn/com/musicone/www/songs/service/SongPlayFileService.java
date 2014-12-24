@@ -13,6 +13,8 @@ import com.song1.www.songs.pojo.SongPlayFile;
  */
 public interface SongPlayFileService {
 	
+	public int listUploadDataCounts()throws Exception;
+	
 	public List<SongPlayFile> listFiles()throws Exception;
 	
 	public void updateFileStatus(SongPlayFile file)throws Exception;

@@ -13,6 +13,8 @@ import com.song1.www.songs.pojo.SongPlayFile;
  */
 public interface SongPlayFileQueryDao {
 	
+	public int listFilesToUploadCount()throws Exception;
+	
 	public List<SongPlayFile> listFilesToUpload()throws Exception;
 	
 	public void updateFileStatus(SongPlayFile file)throws Exception;

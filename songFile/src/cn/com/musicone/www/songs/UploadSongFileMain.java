@@ -34,8 +34,8 @@ public class UploadSongFileMain {
 			logger.error(e.getMessage(),e);
 		}
 		MybatisUtil.init();
-//		uploadDataTimer();
-		uploadFile();
+		uploadDataTimer();
+		//uploadFile();
 	}
 	public static void uploadDataTimer(){
 		Timer timer = new Timer("TIMER-UPLOADFILE");
@@ -44,13 +44,17 @@ public class UploadSongFileMain {
 			public void run() {
 				uploadFile();
 			}
-		}, 0L, 3600000L);
+		}, 0L, SongsConstants.UPLOAD_FILE_PERIOD_TIMES);
 	}
 	
 	
 	public static void uploadFile(){
 		List<SongPlayFile> files = null;
 		while(true){
+			if(!hasDataToDo()){
+				SongsConstants.setPeriodTimes();
+				return ;
+			}
 			try{
 				files = songPlayFileService.listFiles();
 			}catch(Exception e){
@@ -63,13 +67,34 @@ public class UploadSongFileMain {
 				}
 				continue;
 			}
-			if(files == null){
-				return;
-			}
 			toDoSongFile(files);
 		}
 	}
+	
+	public static boolean hasDataToDo(){
+		try{
+			Thread.sleep(60000);
+			int counts = songPlayFileService.listUploadDataCounts();
+			if(counts <= 0){
+				logger.debug("本次数据库遍历结束");
+				return false;
+			}
+		}catch(Exception e){
+			logger.error("获取数据上传到阿里云发生异常");
+			logger.error(e.getMessage(),e);
+			try {
+				Thread.sleep(60000);
+			} catch (InterruptedException e1) {
+				logger.error(e1.getMessage(),e1);
+			}
+			return true;
+		}
+		return true;
+	}
 	public static void toDoSongFile(List<SongPlayFile> files){
+		if(files == null){
+			return;
+		}
 		for (SongPlayFile songPlayFile : files) {
 			if(songPlayFile == null){
 				continue;

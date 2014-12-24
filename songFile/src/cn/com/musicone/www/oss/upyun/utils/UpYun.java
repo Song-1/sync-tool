@@ -1,4 +1,4 @@
-package cn.com.musicone.www.oss.upyun.com;
+package cn.com.musicone.www.oss.upyun.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +20,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
+
+import cn.com.musicone.www.base.utils.FileUtils;
 
 public class UpYun {
 	

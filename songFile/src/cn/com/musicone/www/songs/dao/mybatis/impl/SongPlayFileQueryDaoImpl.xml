@@ -17,6 +17,12 @@
 		songfile.status as status
 	</sql>
 	
+	<select id="listFilesToUploadCount" resultType="int">
+		select count(songfile.id)
+		from ct_file songfile
+		where songfile.status = 7
+	</select>
+	
 	<select id="listFilesToUpload" resultType="SongPlayFile">
 		select <include refid="songFileData"/>
 		from ct_file songfile

@@ -41,4 +41,9 @@ public class SongPlayFileServiceImpl implements SongPlayFileService{
 		getDao().updateFileStatus(file);
 	}
 
+	@Override
+	public int listUploadDataCounts() throws Exception {
+		return getDao().listFilesToUploadCount();
+	}
+
 }
