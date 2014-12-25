@@ -4,6 +4,7 @@
 <configuration>
 	<typeAliases>
 		<typeAlias alias="SongPlayFile" type="com.song1.www.songs.pojo.SongPlayFile" />
+		<typeAlias alias="BookAudioNew" type="com.song1.www.book.pojo.BookAudioNew" />
 	</typeAliases>
 
 	<environments default="development">
@@ -26,5 +27,6 @@
 
 	<mappers>
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/SongPlayFileQueryDaoImpl.xml" />
+		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/BookAudioQueryDaoImpl.xml" />
 	</mappers>
 </configuration>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.com.musicone.www.songs.dao.mybatis.BookAudioQueryDao">
+	<sql id="audioData">
+		audio.id as id,
+		audio.book_id as bookId,
+		audio.md5_value as md5Value,
+		audio.name as name,
+		audio.url as url,
+		audio.seat as seat,
+		audio.status as status,
+		audio.duration as duration,
+		audio.local_path as localPath,
+		audio.create_date as createDate,
+		audio.create_user as createUser
+	</sql>
+	
+	<select id="listAudiosToUploadCount" resultType="int">
+		select count(audio.id)
+		from ct_book_audio audio
+		where audio.status = 7
+	</select>
+	
+	<select id="listAudiosToUpload" resultType="BookAudioNew">
+		select <include refid="audioData"/>
+		from ct_book_audio audio
+		where audio.status = 7
+		limit 0,100
+	</select>
+	
+	<update id="updateAudioStatus" parameterType="BookAudioNew">
+		update ct_book_audio audio
+		<set>
+			audio.status = #{status}
+		</set>
+		where audio.id = #{id}
+	</update>
+
+
+</mapper>
