@@ -1,4 +1,4 @@
-package test.com.test.www.oss;
+package com.test.www.oss;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,29 +63,29 @@ public class FileBucketDemo {
 		//testMkDir();
 
 		// 2.上传文件，图片空间的文件上传请参考 PicBucketDemo.java
-		testWriteFile();
-/*
-		// 3.获取文件信息
+//		testWriteFile();
+
+//		// 3.获取文件信息
 		testGetFileInfo();
+//
+//		// 4.读取目录
+//		testReadDir();
+//
+//		// 5.获取空间占用大小
+//		testGetBucketUsage();
+//
+//		// 6.获取某个目录的空间占用大小
+//		testGetFolderUsage();
+//
+//		// 7.读取文件/下载文件
+//		testReadFile();
+//
+//		// 8.删除文件
+//		testDeleteFile();
+//
+//		// 9.删除目录
+//		testRmDir();
 
-		// 4.读取目录
-		testReadDir();
-
-		// 5.获取空间占用大小
-		testGetBucketUsage();
-
-		// 6.获取某个目录的空间占用大小
-		testGetFolderUsage();
-
-		// 7.读取文件/下载文件
-		testReadFile();
-
-		// 8.删除文件
-		testDeleteFile();
-
-		// 9.删除目录
-		testRmDir();
-*/
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class FileBucketDemo {
 
 		// upyun空间下存在的文件的路径
 		String filePath = DIR_ROOT + FILE_NAME;
-
+		filePath = DIR_ROOT +  "2.mp3";
 		System.out.println(filePath + " 的文件信息：" + upyun.getFileInfo(filePath));
 		System.out.println();
 	}

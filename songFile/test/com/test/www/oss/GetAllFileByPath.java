@@ -1,4 +1,4 @@
-package test.com.test.www.oss;
+package com.test.www.oss;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package test.com.test.www.oss;
+package com.test.www.oss;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -7,6 +7,7 @@ import java.util.Map;
 import cn.com.musicone.www.oss.upyun.listener.CompleteListener;
 import cn.com.musicone.www.oss.upyun.listener.ProgressListener;
 import cn.com.musicone.www.oss.upyun.main.UploaderManager;
+import cn.com.musicone.www.oss.upyun.utils.UpYun;
 import cn.com.musicone.www.oss.upyun.utils.UpYunUtils;
 
 /**
@@ -35,7 +36,11 @@ public class FileMultipartBucketDemo {
 	
 	public static void UploadMultipartTask() {
 		
-		UpYun.init();
+		try {
+			UpYun.init();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		String localFilePath = "E:/1/09 - when tomorrow comes.flac";
 		File localFile = new File(localFilePath);
 		try {
@@ -67,7 +72,7 @@ public class FileMultipartBucketDemo {
 			};
 			
 			UploaderManager uploaderManager = UploaderManager.getInstance(UpYun.BUCKET_NAME);
-			uploaderManager.setBlockSize(Integer.parshInt(UpYun.MULTI_PART_SIZE));
+			uploaderManager.setBlockSize(Integer.parseInt(UpYun.MULTI_PART_SIZE));
 			Map<String, Object> paramsMap = uploaderManager.fetchFileInfoDictionaryWith(localFile, "/upyunMultipart/09 - when tomorrow comes.flac");
 			paramsMap.put("return_url", UpYun.RETURN_URL);
 			// signature & policy 建议从服务端获取
