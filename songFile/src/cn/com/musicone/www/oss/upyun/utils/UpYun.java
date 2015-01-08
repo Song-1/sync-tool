@@ -28,15 +28,15 @@ import cn.com.musicone.www.base.utils.FileUtils;
 public class UpYun {
 	
 	// 运行前先设置好以下三个参数
-	private static String BUCKET_NAME = null;
-	private static String OPERATOR_NAME = null;
-	private static String OPERATOR_PWD = null;
-	private static String RETURN_URL = null;
-	private static String FORM_API_SECRET = null;
-	private static String MULTI_PART_SIZE = null;
+	public static String BUCKET_NAME = null;
+	public static String OPERATOR_NAME = null;
+	public static String OPERATOR_PWD = null;
+	public static String RETURN_URL = null;
+	public static String FORM_API_SECRET = null;
+	public static String MULTI_PART_SIZE = null;
 
 	public static void init() throws Exception {
-		Properties p = FileUtils.loadProperties("upyun.config.properties");
+		Properties p = FileUtils.loadProperties("upyun_config.properties");
 		if (p != null) {
 			BUCKET_NAME = p.getProperty("upyun.bucketName");
 			OPERATOR_NAME = p.getProperty("upyun.operatorName");

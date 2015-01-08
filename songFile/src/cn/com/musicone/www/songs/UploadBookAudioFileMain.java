@@ -5,6 +5,7 @@ package cn.com.musicone.www.songs;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,6 +16,7 @@ import cn.com.musicone.www.base.utils.StringUtil;
 import cn.com.musicone.www.mybatis.MybatisUtil;
 import cn.com.musicone.www.oss.aliyun.AliyunOSSUtil;
 import cn.com.musicone.www.oss.aliyun.multipart.MultipartLocalFileUpload;
+import cn.com.musicone.www.oss.upyun.utils.UpYun;
 import cn.com.musicone.www.songs.service.BookAudioService;
 import cn.com.musicone.www.songs.service.impl.BookAudioServiceImpl;
 
@@ -123,11 +125,25 @@ public class UploadBookAudioFileMain {
 			File uploadFile = null;
 			String localPath = audio.getLocalPath();
 			String key = audio.getUrl();
+			if(StringUtil.isBlank(key)){
+				remark = "文件上传失败,阿里云路径为空";
+				audio.setStatus(4); //// 待审核
+				bookAudioService.updateFileStatus(audio);
+				return ;
+			}
+			if(SongsConstants.OSS_TYPE_UPYUN.equalsIgnoreCase(audio.getOssType())){
+				//// 文件上传至 又拍云
+				UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME, UpYun.OPERATOR_PWD);
+				Map<String,String> map = upyun.getFileInfo(key);
+				if(map == null){
+					return;
+				}
+				audio.setStatus(3); 
+				bookAudioService.updateFileStatus(audio);
+				return;
+			}
 			if(StringUtil.isBlank(localPath)){
 				remark = "文件上传失败,本地路径为空";
-				valiDateFailFlag = true;
-			}else if(StringUtil.isBlank(key)){
-				remark = "文件上传失败,阿里云路径为空";
 				valiDateFailFlag = true;
 			}else{
 				uploadFile = new File(localPath);

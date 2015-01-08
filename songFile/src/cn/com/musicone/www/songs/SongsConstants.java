@@ -12,6 +12,8 @@ import java.util.Calendar;
 public class SongsConstants {
 	
 	public static long UPLOAD_FILE_PERIOD_TIMES = 10000L;
+	public static final String OSS_TYPE_ALIYUN = "aliyun";
+	public static final String OSS_TYPE_UPYUN = "upyun";
 	
 	/**
 	 * 根据当前时间设置定时器的时间间隔值

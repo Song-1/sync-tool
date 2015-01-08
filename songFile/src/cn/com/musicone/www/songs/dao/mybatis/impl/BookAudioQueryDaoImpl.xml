@@ -14,7 +14,8 @@
 		audio.duration as duration,
 		audio.local_path as localPath,
 		audio.create_date as createDate,
-		audio.create_user as createUser
+		audio.create_user as createUser,
+		audio.oss_type as ossType
 	</sql>
 	
 	<select id="listAudiosToUploadCount" resultType="int">

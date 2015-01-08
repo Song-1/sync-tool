@@ -14,7 +14,8 @@
 		songfile.remark as remark,
 		songfile.bak as bak,
 		songfile.bak1 as bak1,
-		songfile.status as status
+		songfile.status as status,
+		songfile.oss_type as ossType
 	</sql>
 	
 	<select id="listFilesToUploadCount" resultType="int">
