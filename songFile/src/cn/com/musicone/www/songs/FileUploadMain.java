@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import cn.com.musicone.www.mybatis.MybatisUtil;
 import cn.com.musicone.www.oss.aliyun.AliyunOSSUtil;
+import cn.com.musicone.www.oss.upyun.utils.UpYun;
 
 /**
  * @author Administrator
@@ -20,6 +21,7 @@ public class FileUploadMain {
 	 */
 	public static void main(String[] args) {
 		try {
+			UpYun.init();
 			AliyunOSSUtil.init();
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
