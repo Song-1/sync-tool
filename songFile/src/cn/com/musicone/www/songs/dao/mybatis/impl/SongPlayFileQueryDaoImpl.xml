@@ -28,7 +28,7 @@
 		select <include refid="songFileData"/>
 		from ct_file songfile
 		where songfile.status = 7
-		order by file.oss_type asc;
+		order by file.oss_type asc
 		limit 0,100
 	</select>
 	
