@@ -5,28 +5,30 @@
 	<typeAliases>
 		<typeAlias alias="SongPlayFile" type="com.song1.www.songs.pojo.SongPlayFile" />
 		<typeAlias alias="BookAudioNew" type="com.song1.www.book.pojo.BookAudioNew" />
+		<typeAlias alias="ImageModel" type="cn.com.musicone.www.images.model.ImageModel" />
 	</typeAliases>
 
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />
-			<dataSource type="POOLED">
+			<!-- <dataSource type="POOLED">
 				<property name="driver" value="com.mysql.jdbc.Driver" />
 				<property name="url" value="jdbc:mysql://112.124.44.10:3306/music" />
 				<property name="username" value="music" />
 				<property name="password" value="music6686" />
-			</dataSource>
-			<!-- <dataSource type="POOLED">
-				<property name="driver" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://112.124.44.10:3306/song_tool" />
-				<property name="username" value="songonetool" />
-				<property name="password" value="songonetool" />
 			</dataSource> -->
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://127.0.0.1:3306/music_test" />
+				<property name="username" value="root" />
+				<property name="password" value="root" />
+			</dataSource>
 		</environment>
 	</environments>
 
 	<mappers>
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/SongPlayFileQueryDaoImpl.xml" />
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/BookAudioQueryDaoImpl.xml" />
+		<mapper resource="cn/com/musicone/www/images/dao/mybatis/impl/ImageQueryDaoImpl.xml" />
 	</mappers>
 </configuration>

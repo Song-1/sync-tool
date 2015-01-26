@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.com.musicone.www.images.dao.mybatis.ImageQueryDao">
+	
+	<insert id="logImageData" parameterType="ImageModel" useGeneratedKeys="true" keyProperty="id">
+		insert into ct_sys_images(md5_value,aliyun_key,file_size,create_date,bak_int)
+		values
+		(#{md5},#{img}, #{size},now(),#{status})
+	</insert>
+	<!--  专辑图片查询  -->
+	<select id="queryAlbumImages" resultType="ImageModel">
+		select album.image as img ,album.icon  from ct_album album
+	</select>
+	<!--  歌手 图片查询  -->
+	<select id="querySingerImages" resultType="ImageModel">
+		select singer.image_key as img from ct_singer_image singer
+	</select>
+	<!--   banner 图片查询  -->
+	<select id="queryBannerImages" resultType="ImageModel">
+		select banner.img from ct_banner banner
+	</select>
+	<!--  书籍 图片查询  -->
+	<select id="queryBookImages" resultType="ImageModel">
+		select book.cover as img from ct_book book
+	</select>
+	<!--  歌单环境标签 图片查询  -->
+	<select id="queryEnvironmentImages" resultType="ImageModel">
+		select ens.img ,ens.icon from ct_environment ens
+	</select>
+	<!-- 歌单 图片查询 -->
+	<select id="querySonglistImages" resultType="ImageModel">
+		select songlist.img ,songlist.icon from t_songlist songlist
+	</select>
+	<!--专辑风格 图片查询-->
+	<select id="queryStyleImages" resultType="ImageModel">
+		select style.image as img, style.icon from ct_style style
+	</select>
+
+</mapper>
