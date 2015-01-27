@@ -126,14 +126,19 @@ public class ImageMain {
 		if(StringUtils.isBlank(key)){
 			return null;
 		}
+		ImageModel data = new ImageModel();
+		data.setImg(key);
+		if(AliyunOSSUtil.isExistObject(AliyunOSSUtil.OSS_IMG_BUCKET, key)){
+			data.setStatus(5);
+			return data;
+		}
 		String message = "获取阿里云的图片[ bucket = "+ bucket +" ,key = " + key + " ] ";
 		OSSObject obj = AliyunOSSUtil.getOSSObject(bucket, key);
 		if(obj == null){
 			logger.debug(message + "   失败 ");
-			return null;
+			data.setStatus(6);
 		}else{
 			logger.debug(message + "   OK ");
-			ImageModel data = new ImageModel();
 			ObjectMetadata meta = obj.getObjectMetadata();
 			long size = meta.getContentLength();
 			data.setSize(size);
@@ -152,7 +157,6 @@ public class ImageMain {
 				e.printStackTrace();
 			}
 			data.setMd5(md5);
-			data.setImg(key);
 			//// copy image to target bucket
 			StringHolder strh = new StringHolder();
 			boolean flag = AliyunOSSUtil.copyFile(bucket, key, AliyunOSSUtil.OSS_IMG_BUCKET, key, strh);
@@ -162,8 +166,8 @@ public class ImageMain {
 			}else{
 				logger.debug(message + " 复制  OK");
 			}
-			return data;
 		}
+		return data;
 	}
 
 }

@@ -11,18 +11,18 @@
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />
-			<!-- <dataSource type="POOLED">
+			<dataSource type="POOLED">
 				<property name="driver" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://112.124.44.10:3306/music" />
+				<property name="url" value="jdbc:mysql://mysqltest.song-1.com:3306/music_new" />
 				<property name="username" value="music" />
 				<property name="password" value="music6686" />
-			</dataSource> -->
-			<dataSource type="POOLED">
+			</dataSource>
+			<!-- <dataSource type="POOLED">
 				<property name="driver" value="com.mysql.jdbc.Driver" />
 				<property name="url" value="jdbc:mysql://127.0.0.1:3306/music_test" />
 				<property name="username" value="root" />
 				<property name="password" value="root" />
-			</dataSource>
+			</dataSource> -->
 		</environment>
 	</environments>
 
