@@ -45,7 +45,7 @@ public class MusicOneMain {
 		//// begin upload book audio file to aliyun or make sure the book audio file have upload to upyun oss
 		UploadBookAudioFileMain.start();
 		//// copy the system images from bucket[cherrytime] to bucket[songimage]
-		ImageMain.start();
+//		ImageMain.start();
 	}
 
 }
