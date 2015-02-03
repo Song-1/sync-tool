@@ -8,7 +8,7 @@ package cn.com.musicone.www.images.model;
  *
  */
 public class ImageModel {
-	
+	private int id;
 	private String img;
 	private String icon;
 	private String md5;
@@ -43,6 +43,12 @@ public class ImageModel {
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }

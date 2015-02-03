@@ -4,6 +4,7 @@
 package cn.com.musicone.www.images.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import cn.com.musicone.www.images.dao.mybatis.ImageQueryDao;
 import cn.com.musicone.www.images.model.ImageModel;
+import cn.com.musicone.www.images.model.SongModel;
 import cn.com.musicone.www.images.service.ImageService;
 import cn.com.musicone.www.mybatis.MybatisUtil;
 
@@ -131,6 +133,48 @@ public class ImageServiceImpl implements ImageService {
 			datas = null;
 		}
 		return datas;
+	}
+
+	@Override
+	public void updateImage(ImageModel model) throws Exception {
+		if(model == null){
+			return;
+		}
+		if(model.getId() <= 0){
+			return;
+		}
+		getDao().updateImage(model);
+	}
+
+	@Override
+	public List<ImageModel> queryImages() {
+		List<ImageModel> datas = null;
+		try {
+			datas = getDao().queryImages();
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			datas = null;
+		}
+		return datas;
+	}
+
+	@Override
+	public List<String> listSongSingerName() throws Exception {
+		return getDao().listSongSingerName();
+	}
+
+	public void updateSongs(SongModel model)throws Exception{
+		if(model == null){
+			return ;
+		}
+		if(model.getId() <= 0){
+			return ;
+		}
+		getDao().updateSongs(model);
+	}
+	
+	public List<SongModel> listSongs()throws Exception{
+		return getDao().listSongs();
 	}
 
 }

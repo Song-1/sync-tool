@@ -71,6 +71,10 @@ public class AliyunOSSUtil {
 			initClient();
 		}
 	}
+	
+	public static OSS getOSS() {
+		return new OSSClient(OSS_ENDPOINT, ACCESS_ID, ACCESS_KEY);
+	}
 
 	protected static void initClient() {
 		ClientConfiguration config = new ClientConfiguration();
@@ -121,10 +125,11 @@ public class AliyunOSSUtil {
 			}
 			throw e;
 		} catch (ClientException e) {
-			if (times > RE_CONNECT_COUNTS) {
-				throw e;
-			}
-			isExistObject(bucket, key, times + 1);
+//			if (times > RE_CONNECT_COUNTS) {
+//				throw e;
+//			}
+//			isExistObject(bucket, key, times + 1);
+			throw e;
 		}
 		return flag;
 	}
@@ -216,34 +221,40 @@ public class AliyunOSSUtil {
 	 */
 	public static boolean copyFile(String bucket, String key,
 			String targetBucket, String targetKey, StringHolder strh) {
-		if (StringUtils.isBlank(bucket)) {
-			strh.value = "源bucket为空";
-			return false;
-		}
-		if (StringUtils.isBlank(key)) {
-			strh.value = "源key为空";
-			return false;
-		}
-		if (!isExistObject(bucket, key)) {
-			strh.value = "源文件不存在";
-			return false;
-		}
-		if (StringUtils.isBlank(targetBucket)) {
-			strh.value = "目标bucket为空";
-			return false;
-		}
-		if (StringUtils.isBlank(targetKey)) {
-			strh.value = "目标key为空";
-			return false;
-		}
-		if (isExistObject(targetBucket, targetKey)) {
-			strh.value = "目标文件已经存在";
+//		if (StringUtils.isBlank(bucket)) {
+//			strh.value = "源bucket为空";
+//			return false;
+//		}
+//		if (StringUtils.isBlank(key)) {
+//			strh.value = "源key为空";
+//			return false;
+//		}
+//		if (!isExistObject(bucket, key)) {
+//			strh.value = "源文件不存在";
+//			return false;
+//		}
+//		if (StringUtils.isBlank(targetBucket)) {
+//			strh.value = "目标bucket为空";
+//			return false;
+//		}
+//		if (StringUtils.isBlank(targetKey)) {
+//			strh.value = "目标key为空";
+//			return false;
+//		}
+//		if (isExistObject(targetBucket, targetKey)) {
+//			strh.value = "目标文件已经存在";
+//			return true;
+//		}
+		try{
+			CopyObjectResult result = getOSSClient().copyObject(bucket, key,
+					targetBucket, targetKey);
+			strh.value = "复制成功 :: " + result.getETag();
+			return true;
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+			strh.value = "复制失败 :: " + e.getMessage();
 			return true;
 		}
-		CopyObjectResult result = getOSSClient().copyObject(bucket, key,
-				targetBucket, targetKey);
-		strh.value = "复制成功 :: " + result.getETag();
-		return true;
 	}
 
 	/**
@@ -276,11 +287,11 @@ public class AliyunOSSUtil {
 		}catch(OSSException e){
 			logger.error(e.getErrorCode(),e);
 		}catch(ClientException e){
-			if (times > RE_CONNECT_COUNTS) {
+//			if (times > RE_CONNECT_COUNTS) {
 				logger.error(e.getMessage(),e);
-			}else{
-				return getOSSObject(bucket, key, times + 1);
-			}
+//			}else{
+//				return getOSSObject(bucket, key, times + 1);
+//			}
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 		}

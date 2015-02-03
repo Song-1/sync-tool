@@ -9,6 +9,19 @@
 		values
 		(#{md5},#{img}, #{size},now(),#{status})
 	</insert>
+	
+	<update id="updateImage" parameterType="ImageModel">
+		update ct_sys_images image set image.bak_int = #{status},image.remark = #{md5} where image.id = #{id}
+	</update>
+	
+	<select id="queryImages" resultType="ImageModel">
+		select  image.id as id ,
+				image.aliyun_key as img
+		from ct_sys_images image
+		where image.bak_int = 7
+		limit 0,100
+	</select>
+	
 	<!--  专辑图片查询  -->
 	<select id="queryAlbumImages" resultType="ImageModel">
 		select album.image as img ,album.icon  from ct_album album
@@ -36,6 +49,43 @@
 	<!--专辑风格 图片查询-->
 	<select id="queryStyleImages" resultType="ImageModel">
 		select style.image as img, style.icon from ct_style style
+	</select>
+	
+	<select id="listSongs" resultType="SongModel">
+	select
+		tsong.id as id,
+		tsong.singer as singer
+	from
+		t_song tsong
+	where
+		tsong.singer is not null
+	</select>
+	
+	<update id="updateSongs" parameterType="SongModel">
+		update t_song tsong set tsong.singer_name = #{remark} ,tsong.state = #{status} where tsong.id = #{id}
+	</update>
+	
+	<select id="listSongSingerName" resultType="String">
+		select
+			t.singer_name
+		from
+			(
+				select distinct
+					(tsong.singer) as singer_name
+				from
+					t_song tsong
+				where
+					tsong.singer is not null
+			) as t
+		where
+			not exists (
+				select
+					singer.singer_id
+				from
+					ct_singer_name singer
+				where
+					singer.singer_name = t.singer_name
+			)
 	</select>
 
 </mapper>

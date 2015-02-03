@@ -4,14 +4,24 @@
 package cn.com.musicone.www.images.service;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.com.musicone.www.images.model.ImageModel;
+import cn.com.musicone.www.images.model.SongModel;
 
 /**
  * @author Administrator
  *
  */
 public interface ImageService {
+public void updateSongs(SongModel model)throws Exception;
+	
+	public List<SongModel> listSongs()throws Exception;
+	public List<String> listSongSingerName()throws Exception;
+	
+	public void updateImage(ImageModel model) throws Exception;
+
+	public List<ImageModel> queryImages();
 	
 	public void save(ImageModel model)throws Exception;
 	
