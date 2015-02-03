@@ -21,6 +21,7 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
+import com.aliyun.oss.model.CopyObjectRequest;
 import com.aliyun.oss.model.CopyObjectResult;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
@@ -253,6 +254,27 @@ public class AliyunOSSUtil {
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 			strh.value = "复制失败 :: " + e.getMessage();
+			return true;
+		}
+	}
+	public static boolean copyFile(String bucket, String key,
+			String targetBucket, String targetKey, String contentType,String md5) {
+		try{
+			CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, key,targetBucket, targetKey);
+			// 设置新的Metadata
+			ObjectMetadata meta = new ObjectMetadata();
+			if(StringUtils.isNotBlank(contentType)){
+				meta.setContentType(contentType);
+			}
+			if(StringUtils.isNotBlank(md5)){
+				meta.addUserMetadata("MD5", md5);
+			}
+			copyObjectRequest.setNewObjectMetadata(meta);
+			CopyObjectResult result = getOSSClient().copyObject(copyObjectRequest);
+			logger.debug("copy object etag ::: " + result.getETag());
+			return true;
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
 			return true;
 		}
 	}

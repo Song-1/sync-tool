@@ -76,4 +76,11 @@ public class StringUtil extends StringUtils {
 			return str;
 		}
 	}
+	public static void main(String[] args) {
+		String str = "Cherry Time/功能/亲子/亲子儿歌大全/0-3岁粤语经典儿歌1/0-3岁粤语经典儿歌1.jpg";
+		str = encodeStr(str, null);
+		System.out.println(str);
+		str = StringUtils.replace(str, "%2F", "/");
+		System.out.println(str);
+	}
 }

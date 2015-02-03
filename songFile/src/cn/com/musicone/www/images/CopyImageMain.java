@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.omg.CORBA.StringHolder;
 
 import cn.com.musicone.www.base.utils.BaseMD5Util;
 import cn.com.musicone.www.base.utils.HttpClientUtil;
@@ -48,10 +47,31 @@ public class CopyImageMain {
 		MybatisUtil.init();
 		start();
 	}
+	
+	public static boolean validateKey(String key){
+		if(StringUtils.isBlank(key)){
+			return false;
+		}
+		String[] keys = ImageMain.keys;
+		for (String str : keys) {
+			if(StringUtils.isBlank(str)){
+				continue;
+			}
+			if (key.startsWith(str)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public static void start() {
 		List<ImageModel> lists = null;
 		while (true) {
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			lists = imageService.queryImages();
 			todoImage(lists);
 		}
@@ -92,6 +112,12 @@ public class CopyImageMain {
 		}
 		String message = "";
 		String key = data.getImg();
+		if(StringUtils.isBlank(key)){
+			return data;
+		}
+		if(!validateKey(key)){
+			return null;
+		}
 		if (validateImg(key)) {
 			message = "获取阿里云的图片[ bucket = " + img_bucket + " ,key = " + key
 					+ " ] ";
@@ -123,9 +149,15 @@ public class CopyImageMain {
 					objectContent = null;
 				}
 				data.setMd5(md5);
-				StringHolder strh = new StringHolder();
+				String contentType = "image/jpeg";
+				String str = key.trim().toLowerCase();
+				if (str.endsWith(".jpg")) {
+					contentType = "image/jpeg";
+				}else if(str.endsWith(".png")){
+					contentType = "image/png";
+				}
 				boolean flag = AliyunOSSUtil.copyFile(bucket, key, img_bucket,
-						key, strh);
+						key,contentType,md5);
 				if (flag) {
 					logger.debug(message + " 复制  OK");
 					data.setStatus(0);

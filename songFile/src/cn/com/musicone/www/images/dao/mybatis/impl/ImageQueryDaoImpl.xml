@@ -5,9 +5,9 @@
 <mapper namespace="cn.com.musicone.www.images.dao.mybatis.ImageQueryDao">
 	
 	<insert id="logImageData" parameterType="ImageModel" useGeneratedKeys="true" keyProperty="id">
-		insert into ct_sys_images(md5_value,aliyun_key,file_size,create_date,bak_int)
+		insert into ct_sys_images(md5_value,aliyun_key,file_size,create_date,bak_int,remark)
 		values
-		(#{md5},#{img}, #{size},now(),#{status})
+		(#{md5},#{img}, #{size},now(),#{status},#{remark})
 	</insert>
 	
 	<update id="updateImage" parameterType="ImageModel">
