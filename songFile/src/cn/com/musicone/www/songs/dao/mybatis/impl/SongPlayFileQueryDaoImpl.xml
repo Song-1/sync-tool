@@ -18,7 +18,8 @@
 		songfile.bak1 as bak1,
 		songfile.status as
 		status,
-		songfile.oss_type as ossType
+		songfile.oss_type as ossType,
+		songfile.file_size as fileSize
 	</sql>
 
 	<select id="listFilesToUploadCount" resultType="int">

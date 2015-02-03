@@ -17,6 +17,7 @@ public class CountingHttpEntity extends HttpEntityWrapper {
         private final ProgressListener listener;
         private long transferred;
         private long totalBytes;
+        private long times;
 
         CountingOutputStream(final OutputStream out, final ProgressListener listener, final long bytesSended, final long totalBytes) {
             super(out);
@@ -27,18 +28,26 @@ public class CountingHttpEntity extends HttpEntityWrapper {
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
+        	long tim1 = System.currentTimeMillis();
             out.write(b, off, len);            
             this.transferred += len;
             this.transferred = trick(this.transferred, this.totalBytes);
             this.listener.transferred(this.transferred, this.totalBytes);
+            long tim2 = System.currentTimeMillis();
+            this.times = tim2 - tim1;
+            this.listener.transferred(this.transferred, this.totalBytes, this.times);
         }
 
         @Override
         public void write(final int b) throws IOException {
+        	long tim1 = System.currentTimeMillis();
             out.write(b);
             this.transferred ++;
             this.transferred = trick(this.transferred, this.totalBytes);
             this.listener.transferred(this.transferred, this.totalBytes);
+            long tim2 = System.currentTimeMillis();
+            this.times = tim2 - tim1;
+            this.listener.transferred(this.transferred, this.totalBytes, this.times);
         }
         
         private long trick(long transferred, long total){

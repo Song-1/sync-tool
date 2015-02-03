@@ -95,7 +95,7 @@ public class UpYun {
 	// 默认不开启debug模式
 	public boolean debug = false;
 	// 默认的超时时间：30秒
-	private int timeout = 30 * 1000;
+	private int timeout = 30 * 1000 * 60;
 	// 默认为自动识别接入点
 	private String apiDomain = ED_AUTO;
 	// 待上传文件的 Content-MD5 值
@@ -518,7 +518,7 @@ public class UpYun {
 			os = conn.getOutputStream();
 			byte[] data = new byte[4096];
 			int temp = 0;
-
+			
 			// 上传文件内容
 			while ((temp = is.read(data)) != -1) {
 				os.write(data, 0, temp);
@@ -526,31 +526,34 @@ public class UpYun {
 
 			// 获取返回的信息
 			getText(conn, false);
-
 			// 上传成功
 			return true;
 
 		} catch (IOException e) {
 			if (debug)
 				e.printStackTrace();
-
 			// 上传失败
 			return false;
 
 		} finally {
 
-			if (os != null) {
-				os.close();
-				os = null;
-			}
-			if (is != null) {
-				is.close();
-				is = null;
-			}
-			if (conn != null) {
-				conn.disconnect();
-				conn = null;
-			}
+			close(is, os, conn);
+		}
+	}
+
+	private void close(InputStream is, OutputStream os, HttpURLConnection conn)
+			throws IOException {
+		if (os != null) {
+			os.close();
+			os = null;
+		}
+		if (is != null) {
+			is.close();
+			is = null;
+		}
+		if (conn != null) {
+			conn.disconnect();
+			conn = null;
 		}
 	}
 
