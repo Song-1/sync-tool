@@ -46,7 +46,7 @@ public class AddSingerForSongsMain {
 		}
 		MybatisUtil.init();
 		//// 新增歌手
-		addSingers();
+		//addSingers();
 		//// 更新歌曲的所属歌手信息
 		addSongSinger();
 	}
@@ -55,10 +55,15 @@ public class AddSingerForSongsMain {
 		try {
 			List<String> singerNames = imageService.listSongSingerName();
 			if (singerNames == null) {
+				logger.debug("没有要新增的歌手数据");
 				return;
 			}
+			int count = singerNames.size();
+			int index = 0;
 			for (String singerName : singerNames) {
 				addSinger(singerName);
+				index ++;
+				System.out.println("新增歌手进度 :::: count = " +count + " ,current index = " + index + ", p :::: " + ( (index * 100) / count ) + "% ");
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -70,7 +75,7 @@ public class AddSingerForSongsMain {
 			return;
 		}
 		name = name.trim();
-		logger.debug("新增歌手::::" + name);
+//		logger.debug("新增歌手::::" + name);
 		long start = System.currentTimeMillis();
 		String url = BASEAPIPATH + "/singer";
 		SingerFormBean bean = new SingerFormBean();
@@ -98,15 +103,23 @@ public class AddSingerForSongsMain {
 
 	public static void addSongSinger() {
 		try {
+			long start = System.currentTimeMillis();
 			List<SongModel> singerNames = imageService.listSongs();
+			long end = System.currentTimeMillis();
+			System.out.println("cost times ::: " + (end - start) + "  ms ");
 			if (singerNames == null) {
+				logger.debug("没有要新增的歌手的歌曲数据");
 				return;
 			}
+			int count = singerNames.size();
+			int index = 0;
 			for (SongModel data : singerNames) {
+				index ++;
 				if (data == null) {
 					continue;
 				}
 				addSongSinger(data);
+				System.out.println("歌曲新增歌手进度 :::: count = " +count + " ,current index = " + index + ", p :::: " + ( (index * 100) / count ) + "% ");
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

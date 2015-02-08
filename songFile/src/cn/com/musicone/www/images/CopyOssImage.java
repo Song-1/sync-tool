@@ -41,7 +41,7 @@ public class CopyOssImage {
 			e.printStackTrace();
 		}
 		String bucket = "cherrytime";
-		List<String> datas = listOssDatas(bucket,"icon/songlisttype/");
+		List<String> datas = listOssDatas(bucket,"享CD/");
 		listOssDatas(bucket,datas);
 //		datas = listOssDatas(bucket,"");
 //		listOssDatas(bucket,datas);

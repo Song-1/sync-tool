@@ -46,4 +46,33 @@ public class SongPlayFileServiceImpl implements SongPlayFileService{
 		return getDao().listFilesToUploadCount();
 	}
 
+
+	@Override
+	public List<SongPlayFile> listUpYunFiles(int start) throws Exception {
+		if(start < 0){
+			start = 0;
+		}
+		int count = listUpYunFilesCount();
+		if(start > count){
+			return null;
+		}
+		return getDao().listUpYunFiles(start);
+	}
+
+	@Override
+	public int listUpYunFilesCount() throws Exception {
+		return getDao().listUpYunFilesCount();
+	}
+
+	@Override
+	public void updateUpyunFileStatus(List<Integer> files)
+			throws Exception {
+		if(files == null){
+			return;
+		}else if(files.isEmpty()){
+			return;
+		}
+		getDao().updateUpyunFileStatus(files);
+	}
+
 }

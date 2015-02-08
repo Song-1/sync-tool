@@ -18,5 +18,8 @@ public interface SongPlayFileService {
 	public List<SongPlayFile> listFiles()throws Exception;
 	
 	public void updateFileStatus(SongPlayFile file)throws Exception;
+	public List<SongPlayFile> listUpYunFiles(int start)throws Exception;
+	public int listUpYunFilesCount()throws Exception;
+	public void updateUpyunFileStatus(List<Integer> files)throws Exception;
 
 }

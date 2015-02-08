@@ -6,13 +6,9 @@ package cn.com.musicone.www.images;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import cn.com.musicone.www.base.utils.HttpClientUtil;
-import cn.com.musicone.www.base.utils.HttpResponseData;
-import cn.com.musicone.www.base.utils.StringUtil;
 import cn.com.musicone.www.images.model.ImageModel;
 import cn.com.musicone.www.images.service.ImageService;
 import cn.com.musicone.www.images.service.impl.ImageServiceImpl;
@@ -34,15 +30,15 @@ public class ImageMain {
 	private static String bucket = "cherrytime";
 	private static String host = "http://songimage.oss-cn-hangzhou.aliyuncs.com";
 	public static ImageService imageService = new ImageServiceImpl();
-	public static String[] keys = { "201501/", "Cherry Time/", "E:/", "H:/" };
 
-	// public static String[] keys =
-	// {"bigfile_upload_test/","book/","cherrytime_special_recommend/","cherrytimemusic/"};
-	// public static String[] keys =
-	// {"cherrytime乐库/","editor/","enjoyCD/","firmware/","makesound/","radio/"};
-	// public static String[] keys =
-	// {"software/","songs/","test/","享CD/","学外语/","童趣乐园/"};
-	// public static String[] keys = {"icon/","images/","imgs/","singer/"};
+	public static String[] keys = {
+			"享CD/2,14.12.16/摇滚/Bob Dylan（鲍勃·迪伦）/Desire/",
+			"享CD/2,14.12.16/摇滚/Bob Seger（鲍勃·西格）/Stranger in Town/",
+			"享CD/2,14.12.16/摇滚/Eagles（老鹰乐队）/The long Run/",
+			"享CD/2,14.12.16/摇滚/Led Zeppelin（齐柏林飞艇乐队）/Led Zeppelin III/",
+			"享CD/2,14.12.16/摇滚/Queen（皇后乐队）/News Of The World/",
+			"享CD/2,14.12.19/摇滚/Guns N' Roses（枪炮与玫瑰）/Use Your Illusion I & II CD1/",
+			"享CD/2,14.12.29/R & B/D'Angelo/Brown Sugar/" };
 
 	// // test
 	public static void main(String[] args) {
@@ -61,22 +57,6 @@ public class ImageMain {
 			listOssDatas(bucket, key, "");
 		}
 	}
-
-	// public static void listOssDatas(String bucket, List<String> datas) {
-	// if (datas == null) {
-	// return;
-	// }
-	// for (String prefix : datas) {
-	// List<String> prefixs = listOssDatas(bucket, prefix);
-	// listOssDatas(bucket, prefixs);
-	// }
-	// }
-	//
-	// public static List<String> listOssDatas(String bucket, String prefix) {
-	// List<String> commonPrefixs = new ArrayList<String>();
-	// listOssDatas(bucket, prefix, "", commonPrefixs);
-	// return commonPrefixs;
-	// }
 
 	public static void listOssDatas(String bucket, String prefix, String marker) {
 		ListObjectsRequest listObjectsRequest = new ListObjectsRequest(bucket);
@@ -224,19 +204,19 @@ public class ImageMain {
 	}
 
 	private static boolean validateImg(String key) {
-//		if (StringUtils.isBlank(key)) {
-//			return false;
-//		}
-//		key = StringUtil.encodeStr(key, null);
-//		key = StringUtils.replace(key, "%2F", "/");
-//		String url = host + "/" + key;
-//		HttpResponseData result = HttpClientUtil.doGet(url);
-//		if (result == null) {
-//			return false;
-//		}
-//		if (HttpStatus.SC_OK == result.getCode()) {
-//			return true;
-//		}
+		// if (StringUtils.isBlank(key)) {
+		// return false;
+		// }
+		// key = StringUtil.encodeStr(key, null);
+		// key = StringUtils.replace(key, "%2F", "/");
+		// String url = host + "/" + key;
+		// HttpResponseData result = HttpClientUtil.doGet(url);
+		// if (result == null) {
+		// return false;
+		// }
+		// if (HttpStatus.SC_OK == result.getCode()) {
+		// return true;
+		// }
 		return false;
 	}
 

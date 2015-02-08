@@ -4,6 +4,7 @@
 package cn.com.musicone.www.songs;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -34,12 +35,23 @@ public class UploadSongFileMain {
 	public static void main(String[] args) {
 		try {
 			AliyunOSSUtil.init();
+			UpYun.init();
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 		MybatisUtil.init();
-		uploadDataTimer();
+//		uploadDataTimer();
 		// uploadFile();
+//		String key = "201501/01 - Public Service Announcement 2000.flac";
+//		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME, UpYun.OPERATOR_PWD);
+//		Map<String,String> map = upyun.getFileInfo(key);
+//		if(map == null){
+//			return;
+//		}else{
+//			System.out.println("OK");
+//		}
+//		start();
+		uploadFile();
 	}
 
 	public static void start() {
@@ -58,13 +70,23 @@ public class UploadSongFileMain {
 
 	public static void uploadFile() {
 		List<SongPlayFile> files = null;
+		int start = 0;
 		while (true) {
-			if (!hasDataToDo()) {
-				SongsConstants.setPeriodTimes();
-				return;
-			}
+//			if (!hasDataToDo()) {
+//				SongsConstants.setPeriodTimes();
+//				return;
+//			}
+			logger.debug("start :::: " + start);
 			try {
-				files = songPlayFileService.listFiles();
+				int count = songPlayFileService.listUpYunFilesCount();
+				if(count == 0){
+					break;
+				}
+				if(start > count){
+					start = 0;
+				}
+//				files = songPlayFileService.listFiles();
+				files = songPlayFileService.listUpYunFiles(start);
 			} catch (Exception e) {
 				logger.error("获取数据上传到阿里云发生异常");
 				logger.error(e.getMessage(), e);
@@ -76,8 +98,16 @@ public class UploadSongFileMain {
 				continue;
 			}
 			toDoSongFile(files);
+			try {
+				songPlayFileService.updateUpyunFileStatus(updateUpyunFiles);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			updateUpyunFiles =  new ArrayList<Integer>();
+			start += 1000;
 		}
 	}
+
 
 	public static boolean hasDataToDo() {
 		try {
@@ -107,7 +137,7 @@ public class UploadSongFileMain {
 			if (songPlayFile == null) {
 				continue;
 			}
-			logger.debug("开始处理文件 ::: " + songPlayFile.getAliyunKey());
+			//logger.debug("开始处理文件 ::: " + songPlayFile.getAliyunKey());
 			String localPath = songPlayFile.getLocalPath();
 			if (StringUtil.isBlank(localPath)) {
 				logger.debug("文件上传失败,本地路径为空 ::: " + songPlayFile.getAliyunKey());
@@ -116,7 +146,7 @@ public class UploadSongFileMain {
 			uploadFileToOSS(songPlayFile);
 		}
 	}
-
+	private static List<Integer> updateUpyunFiles = new ArrayList<Integer>();
 	public static void uploadFileToOSS(SongPlayFile songPlayFile) {
 		if (songPlayFile == null) {
 			return;
@@ -138,10 +168,16 @@ public class UploadSongFileMain {
 				UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME, UpYun.OPERATOR_PWD);
 				Map<String,String> map = upyun.getFileInfo(key);
 				if(map == null){
+					logger.debug("又拍云文件 [  key ::::" + key + " ]   上传失败   ");
 					return;
+//					songPlayFile.setStatus(9);	
+				}else{
+					logger.debug("又拍云文件 [  key ::::" + key + " ]   上传成功    ");
+					updateUpyunFiles.add(songPlayFile.getId());
+//					System.out.println(songPlayFile.getId() + ",");
+					songPlayFile.setStatus(3);	
 				}
-				songPlayFile.setStatus(3);	
-				songPlayFileService.updateFileStatus(songPlayFile);
+//				songPlayFileService.updateFileStatus(songPlayFile);
 				return;
 			}
 			//// 文件上传至 阿里云 默认阿里云
