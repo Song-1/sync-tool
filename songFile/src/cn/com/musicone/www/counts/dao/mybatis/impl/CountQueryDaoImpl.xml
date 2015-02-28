@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.com.musicone.www.counts.dao.mybatis.CountQueryDao">
+
+	<insert id="addSingerCountLog" parameterType="java.util.List" >
+		insert into ct_singer_effective_access(singer_id,effective_access_count,log_time)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.reqId},#{item.clickCount},#{item.logTime})  
+	    </foreach>  
+	</insert>
+	<insert id="addAlbumCountLog" parameterType="java.util.List" >
+		insert into ct_album_effective_access(album_id,effective_access_count,log_time)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.reqId},#{item.clickCount},#{item.logTime})  
+	    </foreach>  
+	</insert>
+	<insert id="addSongCountLog" parameterType="java.util.List" >
+		insert into ct_song_effective_access(song_id,effective_access_count,log_time)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.reqId},#{item.clickCount},#{item.logTime})  
+	    </foreach>  
+	</insert>
+	
+	<insert id="addAlbumsCountLog" parameterType="CountModel" >
+		insert into ct_albums_collect_counts(collect_counts,log_time)
+		values (#{clickCount},#{logTime})  
+	</insert>
+
+	<select id="querySingerCountsByDate" parameterType="SearchReqLogModel" resultType="CountModel">
+		SELECT
+			reqlog.req_path as reqPath,
+			count(id) as clickCount
+		FROM
+			ct_sys_req_log reqlog
+		WHERE
+			(
+				reqlog.log_time BETWEEN #{startDate}
+				AND #{endDate}
+			)
+		AND reqlog.method_name = 'GET'
+		AND reqlog.req_path LIKE '${reqPathLike}'
+		<if test="isFilterReqParams">
+			and( reqlog.req_params LIKE '%page=0%' or reqlog.req_params LIKE '%page=1%'  or reqlog.req_params is NULL)
+		</if>
+		GROUP BY
+			reqlog.req_path
+		limit #{pageStart},#{pageSize}
+	</select>
+	
+	<select id="countAlbumCollect" parameterType="SearchReqLogModel" resultType="CountModel">
+		SELECT
+			count(collect.id) as clickCount
+		FROM
+			t_member_album_songlist collect
+		WHERE
+			collect.type = 1
+		AND (
+			collect.collect_time BETWEEN #{startDate}
+			AND #{endDate}
+		)
+	</select>
+	
+	
+	
+
+</mapper>

@@ -7,6 +7,8 @@
 		<typeAlias alias="BookAudioNew" type="com.song1.www.book.pojo.BookAudioNew" />
 		<typeAlias alias="ImageModel" type="cn.com.musicone.www.images.model.ImageModel" />
 		<typeAlias alias="SongModel" type="cn.com.musicone.www.images.model.SongModel" />
+		<typeAlias alias="CountModel" type="cn.com.musicone.www.counts.model.CountModel" />
+		<typeAlias alias="SearchReqLogModel" type="cn.com.musicone.www.counts.model.SearchReqLogModel" />
 	</typeAliases>
 
 	<environments default="development">
@@ -31,5 +33,6 @@
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/SongPlayFileQueryDaoImpl.xml" />
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/BookAudioQueryDaoImpl.xml" />
 		<mapper resource="cn/com/musicone/www/images/dao/mybatis/impl/ImageQueryDaoImpl.xml" />
+		<mapper resource="cn/com/musicone/www/counts/dao/mybatis/impl/CountQueryDaoImpl.xml"/>
 	</mappers>
 </configuration>
