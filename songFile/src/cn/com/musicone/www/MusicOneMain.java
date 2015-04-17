@@ -41,11 +41,11 @@ public class MusicOneMain {
 		 * start to do jobs
 		 */
 		//// begin upload song play file to aliyun or make sure the song file have upload to upyun oss
-//		UploadSongFileMain.start();
+		UploadSongFileMain.start();
 		//// begin upload book audio file to aliyun or make sure the book audio file have upload to upyun oss
-//		UploadBookAudioFileMain.start();
+		UploadBookAudioFileMain.start();
 		//// copy the system images from bucket[cherrytime] to bucket[songimage]
-		ImageMain.start();
+//		ImageMain.start();
 	}
 
 }
