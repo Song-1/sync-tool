@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.com.musicone.www.files.dao.mybatis.FileQueryDao">
+	<insert id="addFileLocalPath" parameterType="java.util.List">
+		insert into
+		ct_file_local(file_path,oss_key,md5)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.filePath},#{item.ossKey},#{item.md5})
+		</foreach>
+	</insert>
+	
+	<update id="updateFileLocalPaths" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";">
+			update ct_file_local file 
+			<set>
+				file.status = #{item.status}
+				<if test="item.remark != null "> ,file.remark = #{item.remark} </if>
+			</set>
+			where file.id = #{item.id}
+		</foreach>
+	</update>
+	
+	<update id="updateFileLocalPath" parameterType="FileLocalPathModel">
+		update ct_file_local file 
+			<set>
+				file.status = #{status}
+				<if test="remark != null "> ,file.remark = #{remark} </if>
+				<if test="md5 != null"> , file.md5 = #{md5} </if>
+			</set>
+			where file.id = #{id}
+	</update>
+	
+	<select id="getFileLocalPathData" parameterType="String" resultType="int">
+		select count(1)
+		from ct_file_local file
+		where file.file_path = #{path}
+	</select>
+	
+	<select id="listFileLocalPathDatas" parameterType="int" resultType="FileLocalPathModel">
+		select 
+			file.id,
+			file.file_path as filePath,
+			file.oss_key as ossKey,
+			file.md5
+		from ct_file_local file
+		where file.status = 0
+		and file.md5 is null
+		limit 0,100
+	</select>
+	
+	<select id="listFileInfos" parameterType="FileLocalPathModel" resultType="SongFileInfoModel">
+		<!-- SELECT
+			file.song_name as songName,
+			file.album_name as albumName,
+			file.singer_name as singerName,
+			file.YEAR,
+			file.image,
+			file.genre,
+			file.song_id as imageFormat
+		FROM
+			ct_song_file_local file
+		WHERE 1= 1
+		<if test="md5 != null "> and file.md5 = #{md5} </if>
+		<if test="ossKey != null "> and file.oss_key = #{ossKey} </if> -->
+		<!-- SELECT
+			localfile.id,
+			localfile.file_path as filePath,
+			file.song_name AS songName,
+			file.album_name AS albumName,
+			file.singer_name AS singerName,
+			file.year,
+			file.oss_key as ossKey,
+			file.genre,
+			file.song_id AS songId
+		FROM
+			ct_file_local localfile
+		LEFT JOIN ct_song_file_local file ON file.oss_key = localfile.oss_key
+		WHERE
+			file.song_id > 0
+		AND file.song_name IS NOT NULL
+		AND file.singer_name IS NOT NULL
+		AND file.album_name IS NOT NULL
+		AND file.`year` IS NOT NULL
+		AND localfile.status = 7
+		limit 0,20 -->
+		
+		SELECT
+			localfile.id,
+			localfile.file_path as filePath,
+			file.song_name AS songName,
+			file.album_name AS albumName,
+			file.singer_name AS singerName,
+			file.year,
+			file.oss_key as ossKey,
+			file.genre,
+			file.song_id AS songId
+		FROM
+			ct_file_local localfile
+		LEFT JOIN ct_song_file_local file ON file.md5 = localfile.md5 
+		WHERE
+			file.song_id > 0
+		AND file.song_name IS NOT NULL
+		AND file.singer_name IS NOT NULL
+		AND file.album_name IS NOT NULL
+		AND file.`year` IS NOT NULL
+		AND (localfile.status = 7 )
+		limit 0,20
+	</select>
+</mapper>
