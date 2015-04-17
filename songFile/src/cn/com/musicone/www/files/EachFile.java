@@ -44,7 +44,7 @@ public class EachFile {
 
 	public static void main(String[] args) throws Exception {
 		MybatisUtil.init();
-		MemcachedUtil.init();
+//		MemcachedUtil.init();
 		 start();
 		// MemcachedUtil.set(MEMCACHED_DATA_KEY, new HashMap<String, String>());
 		// MemcachedUtil.getClient().delete(MEMCACHED_DATA_KEY);

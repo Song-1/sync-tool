@@ -33,7 +33,7 @@ public class SongFileMain {
 	//// test
 	public static void main(String[] args) throws Exception {
 		MybatisUtil.init();
-		MemcachedUtil.init();
+//		MemcachedUtil.init();
 //		EachFile.start();//// 检索文件
 		getFiles();
 //		listFiles();
