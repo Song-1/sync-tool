@@ -15,10 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -30,6 +32,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.omg.CORBA.StringHolder;
 
 import com.google.gson.Gson;
 
@@ -39,7 +42,8 @@ import com.google.gson.Gson;
  * @author Administrator
  */
 public class HttpClientUtil {
-	private static final Logger logger = LogManager.getLogger(HttpClientUtil.class);
+	private static final Logger logger = LogManager
+			.getLogger(HttpClientUtil.class);
 	private static final String CONVERT_STR_ENCODE = "UTF-8";
 
 	/**
@@ -71,13 +75,47 @@ public class HttpClientUtil {
 	}
 
 	/**
+	 * 判断请求是否正确
+	 * 
+	 * @param url
+	 * @param strh
+	 * @return
+	 */
+	public static int doGet(String url, StringHolder strh) {
+		if (null == strh) {
+			strh = new StringHolder();
+		}
+		if (StringUtils.isBlank(url)) {
+			strh.value = "param error";
+			return -1;
+		}
+		HttpGet request = new HttpGet(url);
+		CloseableHttpClient httpclient = getHttpClient();
+		try {
+			request.setHeader("Accept-Encoding", "gzip, deflate");
+			request.setHeader("Accept-Language", "zh-CN");
+			request.setHeader("Accept",
+					"application/json, application/xml, text/html, text/*, image/*, */*");
+			HttpResponse response = httpclient.execute(request);
+			int stateCode = response.getStatusLine().getStatusCode();
+			return stateCode;
+		} catch (ClientProtocolException e) {
+			logger.error(e.getMessage(), e);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return 0;
+	}
+
+	/**
 	 * 发送HTTP请求到指定的URL
 	 * 
 	 * @param url
 	 * @param request
 	 * @return
 	 */
-	public static HttpResponseData sendRequest(String url, HttpUriRequest request) {
+	public static HttpResponseData sendRequest(String url,
+			HttpUriRequest request) {
 		if (StringUtil.isBlank(url)) {
 			return null;
 		} else if (request == null) {
@@ -89,7 +127,8 @@ public class HttpClientUtil {
 		try {
 			request.setHeader("Accept-Encoding", "gzip, deflate");
 			request.setHeader("Accept-Language", "zh-CN");
-			request.setHeader("Accept", "application/json, application/xml, text/html, text/*, image/*, */*");
+			request.setHeader("Accept",
+					"application/json, application/xml, text/html, text/*, image/*, */*");
 			HttpResponse response = httpclient.execute(request);
 			int stateCode = response.getStatusLine().getStatusCode();
 			HttpEntity entity = response.getEntity();
@@ -113,7 +152,8 @@ public class HttpClientUtil {
 	/**
 	 * 发送HTTP GET请求
 	 * 
-	 * @param url (包括参数的URL)
+	 * @param url
+	 *            (包括参数的URL)
 	 * @return
 	 */
 	public static HttpResponseData doGet(String url) {
@@ -125,7 +165,8 @@ public class HttpClientUtil {
 	 * 发送HTTP POST请求
 	 * 
 	 * @param url
-	 * @param map 参数集合
+	 * @param map
+	 *            参数集合
 	 * @return
 	 */
 	public static HttpResponseData doPost(String url, Map<String, String> map) {
@@ -143,7 +184,8 @@ public class HttpClientUtil {
 	 * 发送HTTP POST请求
 	 * 
 	 * @param url
-	 * @param params (将对象转换成JSON数据)
+	 * @param params
+	 *            (将对象转换成JSON数据)
 	 * @return
 	 * @throws Exception
 	 */
@@ -179,7 +221,8 @@ public class HttpClientUtil {
 	 * 发送HTTP PUT请求
 	 * 
 	 * @param url
-	 * @param map 参数集合
+	 * @param map
+	 *            参数集合
 	 * @return
 	 */
 	public static HttpResponseData doPut(String url, Map<String, String> map) {
@@ -197,7 +240,8 @@ public class HttpClientUtil {
 	 * 发送HTTP PUT请求
 	 * 
 	 * @param url
-	 * @param params (将对象转换成JSON数据)
+	 * @param params
+	 *            (将对象转换成JSON数据)
 	 * @return
 	 * @throws Exception
 	 */
@@ -248,7 +292,8 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static String convertStreamToString(InputStream is) throws Exception {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is, CONVERT_STR_ENCODE));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is,
+				CONVERT_STR_ENCODE));
 		StringBuilder sb = new StringBuilder();
 		String line = null;
 		try {
@@ -300,11 +345,12 @@ public class HttpClientUtil {
 			}
 			String path = filePath;
 			if (StringUtil.isBlank(path)) {
-				path = System.getProperty("user.dir") + File.separator + "temp" + File.separator;
+				path = System.getProperty("user.dir") + File.separator + "temp"
+						+ File.separator;
 			}
 			path += new String(url.substring(url.lastIndexOf("/") + 1));
 			File file = new File(path);
-//			FileDoUtil.mkDirs(file);
+			// FileDoUtil.mkDirs(file);
 			logger.debug("文件下载到:::" + path);
 			FileOutputStream outputStream = new FileOutputStream(file);
 			InputStream inputStream = httpResponse.getEntity().getContent();

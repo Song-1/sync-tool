@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +16,7 @@ import org.omg.CORBA.StringHolder;
 
 import cn.com.musicone.www.base.utils.BaseMD5Util;
 import cn.com.musicone.www.base.utils.FileUtils;
+import cn.com.musicone.www.base.utils.HttpClientUtil;
 import cn.com.musicone.www.base.utils.StringUtil;
 
 import com.aliyun.oss.ClientConfiguration;
@@ -115,24 +118,30 @@ public class AliyunOSSUtil {
 		if (!isInitFlag) {
 			initClient();
 		}
-		boolean flag = true;
-		try {
-			getOSSClient().getObject(bucket, key);
-		} catch (OSSException e) {
-			String errorCode = e.getErrorCode();
-			if ("NoSuchKey".equalsIgnoreCase(errorCode)) {
-				flag = false;
-				return flag;
-			}
-			throw e;
-		} catch (ClientException e) {
-//			if (times > RE_CONNECT_COUNTS) {
-//				throw e;
-//			}
-//			isExistObject(bucket, key, times + 1);
-			throw e;
+		String url = getGenerateURL(bucket, key);
+		int code = HttpClientUtil.doGet(url, null);
+		if(code == 200){
+			return true;
 		}
-		return flag;
+		return false;
+//		boolean flag = true;
+//		try {
+//			getOSSClient().getObject(bucket, key);
+//		} catch (OSSException e) {
+//			String errorCode = e.getErrorCode();
+//			if ("NoSuchKey".equalsIgnoreCase(errorCode)) {
+//				flag = false;
+//				return flag;
+//			}
+//			throw e;
+//		} catch (ClientException e) {
+////			if (times > RE_CONNECT_COUNTS) {
+////				throw e;
+////			}
+////			isExistObject(bucket, key, times + 1);
+//			throw e;
+//		}
+//		return flag;
 	}
 
 	/**
@@ -344,6 +353,47 @@ public class AliyunOSSUtil {
 			System.out.println(" mdr = " + md5 );
 			objectContent.close();
 		}
+	}
+	
+	/**
+	 * 获取阿里云的签名URL
+	 * @param key
+	 * @param bucket
+	 * @return String
+	 */
+	public static String getGenerateURL(String bucket,String key){
+		long times = 600000;
+		return getGenerateURL( bucket,key, times);
+	}
+	
+	/**
+	 * 获取阿里云的签名URL
+	 * 
+	 * @param key
+	 * @param bucket
+	 * @param times
+	 *            超时时间(单位为毫秒)
+	 * @return String
+	 */
+	public static String getGenerateURL(String bucket,String key, long times) {
+		String url = null;
+		if(StringUtils.isBlank(key) || StringUtils.isBlank(bucket) || times <= 0){
+			return url;
+		}
+		times = new Date().getTime() + times;
+		Date expiration = new Date(times);
+		OSS client = getOSSClient();
+		try{
+			URL urls = client.generatePresignedUrl(bucket, key, expiration);
+			if(null != urls){
+				url = urls.toString();
+			}
+		}catch(ClientException e){
+			logger.error(e.getMessage(),e);
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+		}
+		return url;
 	}
 
 }
