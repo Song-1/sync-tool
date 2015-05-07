@@ -52,6 +52,10 @@ public class AliyunOSSUtil {
 
 	protected static boolean isInitFlag = false;
 
+	/**
+	 * 初始化aliyun oss key bucket等属性
+	 * @throws Exception
+	 */
 	public static void init() throws Exception {
 		Properties p = FileUtils.loadProperties("aliyun_oss_config.properties");
 		if (p != null) {

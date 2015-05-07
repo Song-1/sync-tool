@@ -8,19 +8,66 @@ import java.util.List;
 import com.song1.www.songs.pojo.SongPlayFile;
 
 /**
- * @author Administrator
- *
+ * 
+ * @ClassName: SongPlayFileQueryDao 
+ * @Description: 歌曲文件dao
+ * @author Jeckey Lau
+ * @date 2015年7月14日 下午1:32:27
  */
 public interface SongPlayFileQueryDao {
 	
+	/**
+	 * 阿里云文件个数
+	 * @return
+	 * @throws Exception
+	 */
+	public int listAliyunFilesCount()throws Exception;
+	/**
+	 * 阿里云上传的文件
+	 * @return
+	 * @throws Exception
+	 */
+	public List<SongPlayFile> listAliyunToUpload(int start)throws Exception;
+	/**
+	 * 需要上传的文件总数
+	 * @return
+	 * @throws Exception
+	 */
 	public int listFilesToUploadCount()throws Exception;
-	
+	/**
+	 * 所有需要上传的文件
+	 * @return
+	 * @throws Exception
+	 */
 	public List<SongPlayFile> listFilesToUpload()throws Exception;
+	/**
+	 * 
+	 * 又拍云需要上传的文件
+	 * @param start 开始文件
+	 * @return
+	 * @throws Exception
+	 */
 	public List<SongPlayFile> listUpYunFiles(int start)throws Exception;
+	/**
+	 * 又拍云需要上传的文件总数
+	 * @return
+	 * @throws Exception
+	 */
 	public int listUpYunFilesCount()throws Exception;
 	
+	/**
+	 * 更新文件状态
+	 * @param file
+	 * @throws Exception
+	 */
 	public void updateFileStatus(SongPlayFile file)throws Exception;
 	
+	/**
+	 * 
+	 * 批量更新文件状态
+	 * @param files
+	 * @throws Exception
+	 */
 	public void updateUpyunFileStatus(List<Integer> files)throws Exception;
 
 }

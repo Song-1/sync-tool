@@ -15,8 +15,11 @@ import cn.com.musicone.www.songs.dao.mybatis.SongPlayFileQueryDao;
 import cn.com.musicone.www.songs.service.BookAudioService;
 
 /**
- * @author Administrator
- *
+ * 
+ * @ClassName: BookAudioServiceImpl 
+ * @Description: 书籍音频service
+ * @author Jeckey Lau
+ * @date 2015年7月14日 下午1:56:15
  */
 public class BookAudioServiceImpl implements BookAudioService{
 	protected BookAudioQueryDao bookAudioQueryDao;

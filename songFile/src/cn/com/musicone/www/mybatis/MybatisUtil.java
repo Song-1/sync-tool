@@ -23,7 +23,7 @@ public class MybatisUtil {
 	private static Reader reader;
 	
 	/**
-	 * 初始化
+	 * Mybatis 数据库配置初始化
 	 */
 	public static void init(){
 		try {

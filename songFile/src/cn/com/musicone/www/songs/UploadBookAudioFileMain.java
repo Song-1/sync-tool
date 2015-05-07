@@ -1,6 +1,3 @@
-/**
- * 
- */
 package cn.com.musicone.www.songs;
 
 import java.io.File;
@@ -23,18 +20,17 @@ import cn.com.musicone.www.songs.service.impl.BookAudioServiceImpl;
 import com.song1.www.book.pojo.BookAudioNew;
 
 /**
- * @author Administrator
- *
+ * 
+ * @ClassName: UploadBookAudioFileMain 
+ * @Description: 上传书籍
+ * @author Jeckey Lau
+ * @date 2015年7月14日 下午1:54:37
  */
 public class UploadBookAudioFileMain {
 	protected static final Logger logger = LogManager.getLogger(UploadBookAudioFileMain.class);
 	protected static BookAudioService bookAudioService = new BookAudioServiceImpl();
-	public static void main(String[] args) {
-		try {
-			AliyunOSSUtil.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
-		}
+	public static void main(String[] args) throws Exception {
+		AliyunOSSUtil.init();
 		MybatisUtil.init();
 		uploadDataTimer();
 		//uploadFile();
