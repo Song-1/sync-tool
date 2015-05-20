@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import cn.com.musicone.www.base.utils.FileUtils;
-import cn.com.musicone.www.base.utils.MemcachedUtil;
 import cn.com.musicone.www.files.model.FileLocalPathModel;
 import cn.com.musicone.www.files.service.FileService;
 import cn.com.musicone.www.files.service.impl.FileServiceImpl;
@@ -44,24 +43,19 @@ public class EachFile {
 
 	public static void main(String[] args) throws Exception {
 		MybatisUtil.init();
-//		MemcachedUtil.init();
-		 start();
-		// MemcachedUtil.set(MEMCACHED_DATA_KEY, new HashMap<String, String>());
-		// MemcachedUtil.getClient().delete(MEMCACHED_DATA_KEY);
+		start();
 	}
 
-//	@SuppressWarnings("unchecked")
+	// @SuppressWarnings("unchecked")
 	public static void start() throws Exception {
 		init();
 		// cacheMap = (Map<String, String>)
-		// MemcachedUtil.get(MEMCACHED_DATA_KEY);
 		// if (cacheMap == null) {
 		// cacheMap = new HashMap<String, String>();
 		// }
 		File file = new File(fileEachPath);
 		eachFiles(file);
 		saveFiles(true);
-		// MemcachedUtil.set(MEMCACHED_DATA_KEY, cacheMap);
 	}
 
 	/**
@@ -87,8 +81,7 @@ public class EachFile {
 			long start = System.currentTimeMillis();
 			addFile(directory);
 			long end = System.currentTimeMillis();
-			logger.info(directory.getAbsolutePath() + "   cost times :::: "
-					+ (end - start) + " ms ");
+			logger.info(directory.getAbsolutePath() + "   cost times :::: " + (end - start) + " ms ");
 		}
 		if (!directory.isDirectory()) {
 			return;
@@ -110,8 +103,7 @@ public class EachFile {
 					String suffix = ReadFileTag.getSuffix(path);
 					if (ReadFileTag.isMacth(suffix, ReadFileTag.SUFFIX_FLAC)) {
 						return true;
-					} else if (ReadFileTag.isMacth(suffix,
-							ReadFileTag.SUFFIX_MP3)) {
+					} else if (ReadFileTag.isMacth(suffix, ReadFileTag.SUFFIX_MP3)) {
 						return true;
 					}
 				}
@@ -149,7 +141,7 @@ public class EachFile {
 		// model.setMd5(md5);
 		String ossKey = getOssKey(path);
 		model.setOssKey(ossKey);
-//		cacheMap.put(path, ossKey);
+		// cacheMap.put(path, ossKey);
 		fileModels.add(model);
 		saveFiles(false);
 	}

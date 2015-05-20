@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.omg.CORBA.StringHolder;
 
 import cn.com.musicone.www.base.utils.BaseMD5Util;
-import cn.com.musicone.www.base.utils.MemcachedUtil;
 import cn.com.musicone.www.base.utils.StringUtil;
 import cn.com.musicone.www.files.model.FileLocalPathModel;
 import cn.com.musicone.www.files.model.SongFileFormBean;
@@ -33,7 +32,6 @@ public class SongFileMain {
 	//// test
 	public static void main(String[] args) throws Exception {
 		MybatisUtil.init();
-//		MemcachedUtil.init();
 //		EachFile.start();//// 检索文件
 		getFiles();
 //		listFiles();
