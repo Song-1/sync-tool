@@ -33,6 +33,16 @@ public class AlbumFormBean extends BaseFormBean{
 	private List<String> singers;
 	private List<AlbumStyleFormBean> styles;
 	private List<AlbumSongFormBean> songs;
+	//// 新增 (2015-05-23)
+	private String remark;
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 
 	public int getId() {
 		return id;
