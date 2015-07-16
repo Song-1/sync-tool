@@ -32,13 +32,15 @@ public class SongFormBean extends BaseFormBean {
 	private String albumname;
 	private List<SongFormFileBean> files;
 	private String fileid;
+	////新增(2015-07-16)
+	private String songSource;
 	
-	public String getFileid() {
-		return fileid;
+	public String getSongSource() {
+		return songSource;
 	}
 
-	public void setFileid(String fileid) {
-		this.fileid = fileid;
+	public void setSongSource(String songSource) {
+		this.songSource = songSource;
 	}
 
 	public int getId() {

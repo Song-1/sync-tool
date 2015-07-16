@@ -35,7 +35,27 @@ public class AlbumFormBean extends BaseFormBean{
 	private List<AlbumSongFormBean> songs;
 	//// 新增 (2015-05-23)
 	private String remark;
+	//// 新增(2015-07-15)
+	private int hitCounts;
+	////新增(2015-07-16)
+	private String albumSource;
+	
+	public String getHitCounts() {
+		return albumSource;
+	}
 
+	public void setAlbumSource(String albumSource) {
+		this.albumSource = albumSource;
+	}
+	
+	public int getAlbumSource() {
+		return albumSource;
+	}
+
+	public void setHitCounts(int hitCounts) {
+		this.hitCounts = hitCounts;
+	}
+	
 	public String getRemark() {
 		return remark;
 	}
