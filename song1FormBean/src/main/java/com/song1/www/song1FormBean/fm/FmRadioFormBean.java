@@ -25,6 +25,10 @@ public class FmRadioFormBean extends BaseFormBean{
 	private String img;
 	private List<FmAreaRadioFormBean> areas;
 	private List<FmRadioPlayList> playlists;
+	private String source;
+	private String description;
+	private String remark;
+	
 	public int getId() {
 		return id;
 	}
@@ -54,5 +58,23 @@ public class FmRadioFormBean extends BaseFormBean{
 	}
 	public void setPlaylists(List<FmRadioPlayList> playlists) {
 		this.playlists = playlists;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }
