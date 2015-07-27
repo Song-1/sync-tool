@@ -93,6 +93,10 @@ public class UploadBookAudioFileMain {
 		}
 		return true;
 	}
+	/**
+	 * 书籍处理
+	 * @param files
+	 */
 	public static void toDoSongFile(List<BookAudioNew> files){
 		if(files == null){
 			return;
@@ -111,6 +115,11 @@ public class UploadBookAudioFileMain {
 		}
 	}
 	
+	
+	/**
+	 * 上传书籍
+	 * @param audio
+	 */
 	public static void uploadFileToOSS(BookAudioNew audio) {
 		if(audio == null){
 			return;
@@ -123,19 +132,13 @@ public class UploadBookAudioFileMain {
 			String key = audio.getUrl();
 			if(StringUtil.isBlank(key)){
 				remark = "文件上传失败,阿里云路径为空";
-				audio.setStatus(4); //// 待审核
+				audio.setStatus(7); //// 待审核
 				bookAudioService.updateFileStatus(audio);
 				return ;
 			}
 			if(SongsConstants.OSS_TYPE_UPYUN.equalsIgnoreCase(audio.getOssType())){
 				//// 文件上传至 又拍云
-				UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME, UpYun.OPERATOR_PWD);
-				Map<String,String> map = upyun.getFileInfo(key);
-				if(map == null){
-					return;
-				}
-				audio.setStatus(3); 
-				bookAudioService.updateFileStatus(audio);
+				bookUpyunUpload(audio, key);
 				return;
 			}
 			if(StringUtil.isBlank(localPath)){
@@ -161,13 +164,32 @@ public class UploadBookAudioFileMain {
 			if(flag){
 				audio.setStatus(3); //// OK
 			}else{
-				audio.setStatus(8); //// OK
+				audio.setStatus(7); //不Ok则全部继续上传
 			}
 			bookAudioService.updateFileStatus(audio);
 		}catch(Exception e){
 			logger.error("处理文件失败::: " + audio.getUrl());
 			logger.error(e.getMessage(),e);
 		}
+	}
+
+	/**
+	 * 又拍云书籍处理，只检查又拍云是否存在，如果不存在则暂时不处理
+	 * @param audio
+	 * @param key
+	 * @throws Exception
+	 */
+	private static void bookUpyunUpload(BookAudioNew audio, String key)
+			throws Exception {
+		UpYun.init();
+		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME, UpYun.OPERATOR_PWD);
+		Map<String,String> map = upyun.getFileInfo(key);//文件不存在
+		if(map == null){
+			logger.debug("又拍云书籍文件："+ key + " 不存在则暂时不处理");
+			return;
+		}
+		audio.setStatus(3); 
+		bookAudioService.updateFileStatus(audio);
 	}
 
 }
