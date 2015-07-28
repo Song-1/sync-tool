@@ -129,24 +129,6 @@ public class AliyunOSSUtil {
 			return true;
 		}
 		return false;
-//		boolean flag = true;
-//		try {
-//			getOSSClient().getObject(bucket, key);
-//		} catch (OSSException e) {
-//			String errorCode = e.getErrorCode();
-//			if ("NoSuchKey".equalsIgnoreCase(errorCode)) {
-//				flag = false;
-//				return flag;
-//			}
-//			throw e;
-//		} catch (ClientException e) {
-////			if (times > RE_CONNECT_COUNTS) {
-////				throw e;
-////			}
-////			isExistObject(bucket, key, times + 1);
-//			throw e;
-//		}
-//		return flag;
 	}
 
 	

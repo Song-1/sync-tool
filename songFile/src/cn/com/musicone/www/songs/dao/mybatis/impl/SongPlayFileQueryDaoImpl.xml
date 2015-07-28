@@ -28,6 +28,7 @@
 		from ct_file songfile
 		where songfile.status = 7
 	</select>
+	
 
 	<select id="listFilesToUpload" resultType="SongPlayFile">
 		select
@@ -40,19 +41,19 @@
 	</select>
 
 	<!-- 阿里云文件查询 -->
-	<select id="listAliyunToUpload" resultType="int">
-		select
-		count(songfile.id) as ids from ct_file songfile
-		where songfile.status
-		=7 and songfile.oss_type = 'aliyun'
-	</select>
-	<select id="listAliyunFilesCount" parameterType="int" resultType="SongPlayFile">
+	<select id="listAliyunToUpload" parameterType="int" resultType="SongPlayFile">
 		select
 		<include refid="songFileData" />
 		from ct_file songfile
 		where songfile.status = 7
 		and songfile.oss_type ='aliyun'
 		limit #{start},1000
+	</select>
+	
+	<select id="listAliyunFilesCount" resultType="int"  >
+		select
+		count(songfile.id) as ids from ct_file songfile
+		where songfile.status =7 and songfile.oss_type = 'aliyun'
 	</select>
 	
 	<!-- 又拍云文件查询 -->

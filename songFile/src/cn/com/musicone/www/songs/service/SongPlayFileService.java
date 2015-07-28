@@ -27,7 +27,18 @@ public interface SongPlayFileService {
 	
 	public void updateFileStatus(SongPlayFile file)throws Exception;
 	public List<SongPlayFile> listUpYunFiles(int start)throws Exception;
-	public int listUpYunFilesCount()throws Exception;
+	/**
+	 * 查询又拍云需要上传的文件数量
+	 * @return
+	 * @throws Exception
+	 */
+	public int listUpYunFilesCount() throws Exception;
 	public void updateUpyunFileStatus(List<Integer> files)throws Exception;
+
+	/**
+	 * 查询
+	 * @return
+	 */
+	public int listAliyunFilesCount() throws Exception;
 
 }
