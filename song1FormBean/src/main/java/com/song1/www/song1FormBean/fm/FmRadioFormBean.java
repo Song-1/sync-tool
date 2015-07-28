@@ -25,9 +25,10 @@ public class FmRadioFormBean extends BaseFormBean{
 	private String img;
 	private List<FmAreaRadioFormBean> areas;
 	private List<FmRadioPlayList> playlists;
-	private String source;
-	private String description;
-	private String remark;
+	//更新于2015-07-27
+	private String source;     //电台来源
+	private String description;//电台描述
+	private String remark;     //电台备注
 	
 	public int getId() {
 		return id;
