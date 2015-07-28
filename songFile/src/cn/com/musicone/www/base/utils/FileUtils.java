@@ -39,6 +39,11 @@ public class FileUtils {
 		path += fileRelativePath;
 		LogUtil.debug(logger,path);
 		File file = new File(path);
+		if (!file.exists()) {
+			path  = getBasePath();
+			path += fileRelativePath;
+			file = new File(path);
+		}
 		if (file.exists()) {
 			return file;
 		} else {

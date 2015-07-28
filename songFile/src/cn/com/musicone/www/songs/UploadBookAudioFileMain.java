@@ -182,12 +182,16 @@ public class UploadBookAudioFileMain {
 		LogUtil.debug(logger,key);
 		File uploadFile = new File(localPath);
 		MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(bucket, key, audio.getMd5Value(), uploadFile);
-		if(partUpload.upload()){
+		boolean upload = partUpload.upload();
+		if(upload){
+			LogUtil.debug(logger, "key:" + key + "上传成功,开始修改数据库");
 			audio.setStatus(3); //// OK
 			bookAudioService.updateFileStatus(audio);
 			return true;
+		}else {
+			LogUtil.debug(logger, "key:" + key + "上传失败");
+			return false;
 		}
-		return false;
 	}
 
 	/**

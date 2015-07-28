@@ -152,20 +152,22 @@ public class MultipartLocalFileUpload {
 	}
 
 	/**
-	 * 分块上传,上传某个文件
+	 * 分块上传,上传某个文件，如果成功则返回true，如果失败则返回false
 	 * @return
 	 * @throws Exception 
 	 */
 	private boolean uploadMultiPart() throws Exception {
+		initUploadId();
+		return uploadPart();
+	}
+
+	/**
+	 * 初始化uploadid
+	 */
+	private void initUploadId() {
 		// // 获取Oss客户端
 		OSS client = AliyunOSSUtil.getOSSClient();
-		ObjectMetadata objectMetadata = createObjectMetadata();
-		uploadId = MultipartUploadUtil.createOrGetMultipartUploadRequest(client, bucket, key, objectMetadata, true);
-		if (!StringUtils.isBlank(uploadId)) {
-			return uploadPart();
-		}else {
-			return  false;
-		}
+		uploadId = MultipartUploadUtil.createOrGetMultipartUploadRequest(client, bucket, key, createObjectMetadata(), true);
 	}
 
 	
@@ -214,11 +216,11 @@ public class MultipartLocalFileUpload {
 		LogUtil.debug(logger, "==MultipartlocalFileUpload 232== 文件块的上传线程池  已经关闭  == ");
 		if (eTags.size() != partCount) {
 			reuploadFile++;
-			uploadPart();
+			return uploadPart();
 		}else{
 			MultipartUploadUtil.completeMultipartUpload(client, bucket, key,uploadId, eTags);
+			return true;
 		}
-		return false;
 	}
 
 	private class UploadPartThread implements Runnable {
