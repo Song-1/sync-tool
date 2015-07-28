@@ -3,6 +3,7 @@
  */
 package cn.com.musicone.www.images;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,12 +39,8 @@ public class AddSingerForSongsMain {
 			.getLogger(CopyImageMain.class);
 	public static ImageService imageService = new ImageServiceImpl();
 
-	public static void main(String[] args) {
-		try {
-			AliyunOSSUtil.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+	public static void main(String[] args) throws Exception {
+		AliyunOSSUtil.init();
 		MybatisUtil.init();
 		//// 新增歌手
 		//addSingers();

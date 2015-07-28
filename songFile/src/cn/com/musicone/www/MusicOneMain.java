@@ -22,18 +22,14 @@ public class MusicOneMain {
 			.getLogger(MusicOneMain.class);
 
 	// // main
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		/*
 		 * init
 		 */
-		try {
-			// // up yun oss init
-			UpYun.init();
-			// // aliyun oss init
-			AliyunOSSUtil.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+		// // up yun oss init
+		UpYun.init();
+		// // aliyun oss init
+		AliyunOSSUtil.init();
 		// // db connection init
 		MybatisUtil.init();
 		

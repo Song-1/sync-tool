@@ -3,6 +3,7 @@
  */
 package cn.com.musicone.www.counts;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public class CountsMain {
 	protected static final Logger logger = LogManager
 			.getLogger(CountsMain.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		MybatisUtil.init();
 		timerStart();
 	}

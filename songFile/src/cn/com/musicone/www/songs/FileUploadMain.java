@@ -18,14 +18,11 @@ public class FileUploadMain {
 	protected static final Logger logger = LogManager.getLogger(FileUploadMain.class);
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
-		try {
-			UpYun.init();
-			AliyunOSSUtil.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
-		}
+	public static void main(String[] args) throws Exception {
+		UpYun.init();
+		AliyunOSSUtil.init();
 		MybatisUtil.init();
 		UploadSongFileMain.start();
 		UploadBookAudioFileMain.start();

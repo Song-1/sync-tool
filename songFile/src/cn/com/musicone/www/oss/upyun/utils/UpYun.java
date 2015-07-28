@@ -35,6 +35,10 @@ public class UpYun {
 	public static String FORM_API_SECRET = null;
 	public static String MULTI_PART_SIZE = null;
 
+	/**
+	 * 初始化又拍云
+	 * @throws Exception
+	 */
 	public static void init() throws Exception {
 		Properties p = FileUtils.loadProperties("upyun_config.properties");
 		if (p != null) {

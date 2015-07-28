@@ -3,6 +3,7 @@
  */
 package cn.com.musicone.www.images;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,12 +42,8 @@ public class ImageMain {
 			"享CD/2,14.12.29/R & B/D'Angelo/Brown Sugar/" };
 
 	// // test
-	public static void main(String[] args) {
-		try {
-			AliyunOSSUtil.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+	public static void main(String[] args) throws Exception {
+		AliyunOSSUtil.init();
 		MybatisUtil.init();
 		// 获取oss上的图片
 		start();

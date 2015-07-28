@@ -24,7 +24,7 @@ import cn.com.musicone.www.songs.service.BookAudioService;
 public class BookAudioServiceImpl implements BookAudioService{
 	protected BookAudioQueryDao bookAudioQueryDao;
 	
-	public BookAudioQueryDao getDao()throws Exception{
+	public BookAudioQueryDao getDao() throws IllegalArgumentException{
 		SqlSession session = MybatisUtil.getSqlSession();
 		if(session == null){
 			IllegalArgumentException e = new IllegalArgumentException("数据库连接session不存在");
@@ -35,7 +35,7 @@ public class BookAudioServiceImpl implements BookAudioService{
 	}
 
 	@Override
-	public int listUploadDataCounts() throws Exception {
+	public int listUploadDataCounts() {
 		return getDao().listAudiosToUploadCount();
 	}
 

@@ -20,10 +20,10 @@ public interface BookAudioQueryDao {
 	 * @return
 	 * @throws Exception
 	 */
-	public int listAudiosToUploadCount()throws Exception;
+	public int listAudiosToUploadCount();
 	
 	/**
-	 * 查询需要上传的书籍
+	 * 查询需要上传的书籍,每次获取100条
 	 * @return
 	 * @throws Exception
 	 */

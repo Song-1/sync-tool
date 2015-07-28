@@ -38,12 +38,8 @@ public class CopyImageMain {
 	private static String host = "http://songimage.oss-cn-hangzhou.aliyuncs.com";
 
 	// // main test
-	public static void main(String[] args) {
-		try {
-			AliyunOSSUtil.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+	public static void main(String[] args) throws Exception {
+		AliyunOSSUtil.init();
 		MybatisUtil.init();
 		start();
 	}

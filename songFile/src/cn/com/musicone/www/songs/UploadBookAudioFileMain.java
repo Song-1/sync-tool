@@ -56,6 +56,7 @@ public class UploadBookAudioFileMain {
 		while(true){
 			if(!hasDataToDo()){
 				SongsConstants.setPeriodTimes();
+				logger.debug("本次上传完毕");
 				return ;
 			}
 			try{
@@ -74,103 +75,93 @@ public class UploadBookAudioFileMain {
 		}
 	}
 	
+	/**
+	 * 是否有书籍需要上传，有书籍需要上传则返回true，没有则返回false
+	 * @return
+	 */
 	public static boolean hasDataToDo(){
-		try{
-			int counts = bookAudioService.listUploadDataCounts();
-			if(counts <= 0){
-				logger.debug("本次数据库遍历结束");
-				return false;
-			}
-		}catch(Exception e){
-			logger.error("获取数据上传到阿里云发生异常");
-			logger.error(e.getMessage(),e);
-			try {
-				Thread.sleep(60000);
-			} catch (InterruptedException e1) {
-				logger.error(e1.getMessage(),e1);
-			}
-			return true;
-		}
-		return true;
+		return bookAudioService.listUploadDataCounts() > 0;
 	}
 	/**
 	 * 书籍处理
 	 * @param files
 	 */
 	public static void toDoSongFile(List<BookAudioNew> files){
-		if(files == null){
-			return;
-		}
-		for (BookAudioNew audio : files) {
-			if(audio == null){
-				continue;
+		if(files != null){
+			for (BookAudioNew audio : files) {
+				if(audio == null){
+					continue;
+				}
+				logger.debug("开始处理文件 ::: " + audio.getUrl());
+				String localPath = audio.getLocalPath();
+				if(StringUtil.isBlank(localPath)){
+					logger.debug("文件上传失败,本地路径为空 ::: " + audio.getUrl());
+					continue;
+				}
+				uploadFileToOSS(audio);
 			}
-			logger.debug("开始处理文件 ::: " + audio.getUrl());
-			String localPath = audio.getLocalPath();
-			if(StringUtil.isBlank(localPath)){
-				logger.debug("文件上传失败,本地路径为空 ::: " + audio.getUrl());
-				continue;
-			}
-			uploadFileToOSS(audio);
 		}
 	}
 	
 	
 	/**
-	 * 上传书籍
+	 * 上传书籍到云端,
 	 * @param audio
 	 */
+	public static boolean validateFailFlag = false;
 	public static void uploadFileToOSS(BookAudioNew audio) {
-		if(audio == null){
-			return;
-		}
-		try{
-			boolean valiDateFailFlag = false;
+		if(audio != null){
 			String remark = null;
 			File uploadFile = null;
-			String localPath = audio.getLocalPath();
 			String key = audio.getUrl();
-			if(StringUtil.isBlank(key)){
-				remark = "文件上传失败,阿里云路径为空";
-				audio.setStatus(7); //// 待审核
-				bookAudioService.updateFileStatus(audio);
-				return ;
-			}
-			if(SongsConstants.OSS_TYPE_UPYUN.equalsIgnoreCase(audio.getOssType())){
-				//// 文件上传至 又拍云
-				bookUpyunUpload(audio, key);
-				return;
-			}
-			if(StringUtil.isBlank(localPath)){
-				remark = "文件上传失败,本地路径为空";
-				valiDateFailFlag = true;
-			}else{
-				uploadFile = new File(localPath);
-				if(!uploadFile.exists()){
-					remark = "文件上传失败,本地文件不存在";
-					valiDateFailFlag = true;
+			if(!StringUtil.isBlank(key)){
+				if (SongsConstants.OSS_TYPE_UPYUN.equalsIgnoreCase(audio.getOssType())) {
+					try {
+						bookUpyunUpload(audio, key);
+					} catch (Exception e) {
+						validateFailFlag = true;
+						logger.error(audio.getLocalPath() + "书籍文件上传失败!");
+					}
+				}else if (SongsConstants.OSS_TYPE_ALIYUN.equalsIgnoreCase(audio.getOssType())) {
+					bookUploadAliyun(audio, uploadFile, key);
+				}else{
+					remark = "暂时不能支持除了阿里云和又拍云之外的文件上传";
 				}
 			}
-			if(valiDateFailFlag){
-				logger.error(remark + " " + key);
-				audio.setStatus(4); //// 待审核
-				bookAudioService.updateFileStatus(audio);
+			remark = "文件上传失败,阿里云路径为空";
+			if(validateFailFlag){
+				logger.error(remark + "" + key);
+//				bookAudioService.updateFileStatus(audio);
 				return ;
 			}
-			boolean flag = false;
-			String bucket = AliyunOSSUtil.getDeafultBucket();
-			MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(bucket, key, audio.getMd5Value(), uploadFile);
-			flag = partUpload.upload();
-			if(flag){
-				audio.setStatus(3); //// OK
-			}else{
-				audio.setStatus(7); //不Ok则全部继续上传
-			}
-			bookAudioService.updateFileStatus(audio);
-		}catch(Exception e){
-			logger.error("处理文件失败::: " + audio.getUrl());
-			logger.error(e.getMessage(),e);
 		}
+	}
+
+	/**
+	 * 上传书籍文件到阿里云,如果成功则返回true，如果不成功则返回false
+	 * @param audio
+	 * @param uploadFile
+	 * @param key
+	 * @throws Exception
+	 */
+	private static boolean bookUploadAliyun(BookAudioNew audio, File uploadFile,
+			String key){
+		boolean flag = false;
+		String bucket = AliyunOSSUtil.getDeafultBucket();
+		MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(bucket, key, audio.getMd5Value(), uploadFile);
+		flag = partUpload.upload();
+		if(flag){
+			audio.setStatus(3); //// OK
+		}//else{
+		//	audio.setStatus(7); //不Ok则全部继续上传
+		//}
+		try {
+			bookAudioService.updateFileStatus(audio);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**

@@ -3,6 +3,7 @@
  */
 package cn.com.musicone.www.mybatis;
 
+import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.ibatis.io.Resources;
@@ -24,14 +25,11 @@ public class MybatisUtil {
 	
 	/**
 	 * Mybatis 数据库配置初始化
+	 * @throws IOException 
 	 */
-	public static void init(){
-		try {
-			reader = Resources.getResourceAsReader("Configuration.xml");
-			sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
-		}
+	public static void init() throws IOException{
+		reader = Resources.getResourceAsReader("Configuration.xml");
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
 	}
 	/**
 	 * 获取sqlSessionFactory

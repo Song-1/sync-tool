@@ -18,31 +18,28 @@ import cn.com.musicone.www.base.utils.StringUtil;
 import cn.com.musicone.www.mybatis.MybatisUtil;
 import cn.com.musicone.www.oss.aliyun.AliyunOSSUtil;
 import cn.com.musicone.www.oss.aliyun.multipart.MultipartLocalFileUpload;
-import cn.com.musicone.www.oss.upyun.main.UploaderManager;
 import cn.com.musicone.www.oss.upyun.utils.UpYun;
 import cn.com.musicone.www.songs.service.SongPlayFileService;
 import cn.com.musicone.www.songs.service.impl.SongPlayFileServiceImpl;
 
-import com.music.MusicConstants;
 import com.song1.www.songs.pojo.SongPlayFile;
 import com.test.www.oss.FileMultipartBucketDemo;
 
 /**
- * @author Administrator
- *
+ * 
+ * @ClassName: UploadSongFileMain 
+ * @Description: 上传歌曲文件
+ * @author Jeckey Lau
+ * @date 2015年7月28日 上午9:18:03
  */
 public class UploadSongFileMain {
 	protected static final Logger logger = LogManager
 			.getLogger(UploadSongFileMain.class);
 	protected static SongPlayFileService songPlayFileService = new SongPlayFileServiceImpl();
 
-	public static void main(String[] args) {
-		try {
-			AliyunOSSUtil.init();
-			UpYun.init();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+	public static void main(String[] args) throws Exception {
+		AliyunOSSUtil.init();
+		UpYun.init();
 		MybatisUtil.init();
 		// uploadDataTimer();
 		// uploadFile();
