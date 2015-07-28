@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Class-Path: . songFile_lib/aliyun-sdk-oss-2.0.4.jar songFile_lib/asm-3
+ .3.1.jar songFile_lib/cglib-2.2.2.jar songFile_lib/commons-codec-1.4.
+ jar songFile_lib/commons-io-2.4.jar songFile_lib/commons-lang-2.6.jar
+  songFile_lib/commons-logging-1.1.1.jar songFile_lib/gson-2.2.4.jar s
+ ongFile_lib/hamcrest-core-1.3.jar songFile_lib/httpasyncclient-4.0.1.
+ jar songFile_lib/httpclient-4.3.5.jar songFile_lib/httpclientandroidl
+ ib-4.3.0.jar songFile_lib/httpcore-4.3.2.jar songFile_lib/httpcore-ni
+ o-4.3.2.jar songFile_lib/jaudiotagger-2.0.3.jar songFile_lib/java_mem
+ cached-release_2.0.1.jar songFile_lib/javassist-3.17.1-GA.jar songFil
+ e_lib/jdom-1.1.jar songFile_lib/json-20140107.jar songFile_lib/log4j-
+ 1.2.17.jar songFile_lib/log4j-api-2.0.2.jar songFile_lib/log4j-core-2
+ .0.2.jar songFile_lib/mybatis-3.2.7.jar songFile_lib/mysql-connector-
+ java-5.1.20-bin.jar songFile_lib/protobuf-java-2.4.1.jar songFile_lib
+ /slf4j-api-1.7.5.jar songFile_lib/slf4j-log4j12-1.7.5.jar songFile_li
+ b/song1.formbean.v.1.8.jar songFile_lib/audiotagtool-1.0.2-SNAPSHOT.j
+ ar
+Main-Class: cn.com.musicone.www.songs.UploadBookAudioFileMain

@@ -11,13 +11,22 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sun.org.apache.xml.internal.resolver.helpers.Debug;
+
 /**
  * @author Administrator
  *
  */
 public class FileUtils {
 	protected static final Logger logger = LogManager.getLogger(FileUtils.class);
-	
+	/**
+	 * 日志debug
+	 * @param message
+	 */
+	public static void debug(String message){
+		logger.debug(message);
+		System.out.println(message);
+	}
 
 	/**
 	 * 查找文件
@@ -26,9 +35,9 @@ public class FileUtils {
 	 * @return File
 	 */
 	public static File findFile(String fileRelativePath) {
-		String path = getBasePath();
+		String path = "" ;//= getBasePath();
 		path += fileRelativePath;
-		logger.debug(path);
+		LogUtil.debug(logger,path);
 		File file = new File(path);
 		if (file.exists()) {
 			return file;
@@ -75,9 +84,13 @@ public class FileUtils {
 		Properties p = new Properties();
 		FileInputStream fileInputStream = null;
 		File file = findFile(path);
-		if (file == null || !file.exists()) {
-			throw new FileNotFoundException("加载的配置文件不存在");
-		} 
+		if (file != null) {
+			if (!file.exists()) {
+				throw new FileNotFoundException("加载的配置文件不存在" + file.getAbsolutePath());
+			}
+		} else {
+			throw new FileNotFoundException("加载的配置文件为空");
+		}
 		try {
 			fileInputStream = new FileInputStream(file);
 			p.load(fileInputStream);

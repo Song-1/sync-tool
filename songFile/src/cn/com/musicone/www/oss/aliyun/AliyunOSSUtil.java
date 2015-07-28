@@ -26,6 +26,7 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.CopyObjectRequest;
 import com.aliyun.oss.model.CopyObjectResult;
+import com.aliyun.oss.model.GetObjectRequest;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
@@ -148,6 +149,35 @@ public class AliyunOSSUtil {
 //		return flag;
 	}
 
+	
+	/**
+	 * 判断阿里云服务器指定bucket下面是否存在此key值的文件 .<br>
+	 * 
+	 * @param bucket
+	 * @param key
+	 * @return
+	 */
+	public static boolean isExistObject1(String bucket, String key){
+		OSSObject object = null ;
+		try {
+			OSS ossClient = getOSSClient();
+			// 新建GetObjectRequest
+			GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, key);
+			// 获取0~100字节范围内的数据
+			getObjectRequest.setRange(0, 100);
+			// 获取Object，返回结果为OSSObject对象
+			object = ossClient.getObject(getObjectRequest);
+		} catch (Exception e) {
+			return false;
+		}
+		if (object != null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * 上传文件到OSS
 	 * 

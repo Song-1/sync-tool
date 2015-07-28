@@ -101,7 +101,16 @@ public class MultipartUploadUtil {
 		return uploadId;
 	}
 	
-	// 完成一个multi-part请求。
+	/**
+	 *  完成一个multi-part请求。
+	 * @param client
+	 * @param bucketName
+	 * @param key
+	 * @param uploadId
+	 * @param eTags
+	 * @throws OSSException
+	 * @throws ClientException
+	 */
     public static void completeMultipartUpload(OSS client,String bucketName, String key, String uploadId, List<PartETag> eTags)throws OSSException, ClientException {
         //为part按partnumber排序
         Collections.sort(eTags, new Comparator<PartETag>(){

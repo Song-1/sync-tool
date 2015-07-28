@@ -26,4 +26,24 @@ public class LogUtil {
 		}
 		log.error(error_message);
 	}
+	
+	/**
+	 * 日志debug
+	 * @param message
+	 */
+	public static void debug(org.apache.logging.log4j.Logger logger,String message){
+		logger.debug(message);
+//		System.out.println(message);
+	}
+	
+	
+
+	/**
+	 * 日志error
+	 * @param message
+	 */
+	public static void error(org.apache.logging.log4j.Logger logger,String message){
+		logger.error(message);
+//		System.out.println(message);
+	}
 }
