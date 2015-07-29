@@ -32,7 +32,6 @@ import com.aliyun.oss.model.PartETag;
 import com.aliyun.oss.model.PartSummary;
 import com.aliyun.oss.model.UploadPartRequest;
 import com.aliyun.oss.model.UploadPartResult;
-import com.mysql.jdbc.log.Log;
 
 /**
  * @author Administrator
@@ -214,6 +213,8 @@ public class MultipartLocalFileUpload {
 			}
 		}
 		LogUtil.debug(logger, "==MultipartlocalFileUpload 232== 文件块的上传线程池  已经关闭  == ");
+		pool = null;
+		System.gc();
 		if (eTags.size() != partCount) {
 			reuploadFile++;
 			return uploadPart();

@@ -43,16 +43,19 @@ public class UploadBookAudioFileMain {
 	
 	public static void uploadDataTimer(){
 		Timer timer = new Timer("TIMER-UPLOADFILE-BOOKAUDIO");
-		timer.schedule(new TimerTask() {
+		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 				try {
 					uploadFile();
 				} catch (Exception e) {
 					e.printStackTrace();
+					System.gc();
 				}
 			}
-		}, 0L, SongsConstants.UPLOAD_FILE_PERIOD_TIMES);
+		};
+		timer.schedule(task, 0L, SongsConstants.UPLOAD_FILE_PERIOD_TIMES);
+		System.gc();
 	}
 	
 	

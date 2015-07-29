@@ -18,7 +18,6 @@ import cn.com.musicone.www.oss.upyun.utils.UpYun;
 import cn.com.musicone.www.songs.service.SongPlayFileService;
 import cn.com.musicone.www.songs.service.impl.SongPlayFileServiceImpl;
 
-import com.song1.www.book.pojo.BookAudioNew;
 import com.song1.www.songs.pojo.SongPlayFile;
 
 /**
@@ -50,16 +49,19 @@ public class UploadSongFileMain {
 	 */
 	public static void uploadDataTimer() {
 		Timer timer = new Timer("TIMER-UPLOADFILE-SONG");
-		timer.schedule(new TimerTask() {
+		TimerTask task = new TimerTask()  {
 			@Override
 			public void run() {
 				try {
 					uploadFile();
 				} catch (Exception e) {
 					e.printStackTrace();
+					System.gc();
 				}
 			}
-		}, 0L, SongsConstants.UPLOAD_FILE_PERIOD_TIMES);
+		};
+		timer.schedule(task, 0L, SongsConstants.UPLOAD_FILE_PERIOD_TIMES);
+		System.gc();
 	}
 	/**
 	 * 上传音乐文件

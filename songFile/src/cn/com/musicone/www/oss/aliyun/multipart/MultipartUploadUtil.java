@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import cn.com.musicone.www.oss.aliyun.AliyunOSSUtil;
 import cn.com.musicone.www.oss.aliyun.OSSBucketException;
 import cn.com.musicone.www.oss.aliyun.OSSKeyException;
 
@@ -51,7 +52,12 @@ public class MultipartUploadUtil {
 			String key) throws OSSException, ClientException {
 		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(
 				bucketName);
-		MultipartUploadListing lists = client.listMultipartUploads(request);
+		MultipartUploadListing lists = null;
+		try {
+			lists = client.listMultipartUploads(request);
+		} catch (Exception e) {
+			return doException(bucketName, key);
+		}
 		if (lists == null) {
 			return null;
 		}
@@ -68,6 +74,13 @@ public class MultipartUploadUtil {
 			}
 		}
 		return null;
+	}
+
+	private static String doException(String bucketName, String key) {
+		AliyunOSSUtil.initClient();
+		OSS ossClient = AliyunOSSUtil.getOSSClient();
+		return isExistMultipartUpload(ossClient, bucketName, key);
+		
 	}
 
 	/**

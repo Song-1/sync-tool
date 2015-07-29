@@ -85,7 +85,7 @@ public class AliyunOSSUtil {
 		return new OSSClient(OSS_ENDPOINT, ACCESS_ID, ACCESS_KEY);
 	}
 
-	protected static void initClient() {
+	public static void initClient() {
 		ClientConfiguration config = new ClientConfiguration();
 		config.setSocketTimeout(30000);
 		config.setMaxErrorRetry(3);
