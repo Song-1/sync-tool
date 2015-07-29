@@ -154,12 +154,16 @@ public class UploadSongFileMain {
 		LogUtil.debug(logger,key);
 		File uploadFile = new File(localPath);
 		MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(bucket, key, songPlayFile.getMd5(), uploadFile);
-		if(partUpload.upload()){
+		boolean uplod = partUpload.upload();
+		if(uplod){
+			LogUtil.debug(logger, "key:" + key + "上传成功,开始修改数据库");
 			songPlayFile.setStatus(3); //// OK
 			songPlayFileService.updateFileStatus(songPlayFile);
 			return true;
+		}else{
+			LogUtil.debug(logger, "key:" + key + "上传失败");
+			return false;
 		}
-		return false;
 	}
 	
 	/**

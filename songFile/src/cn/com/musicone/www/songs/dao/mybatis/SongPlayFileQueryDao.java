@@ -29,13 +29,13 @@ public interface SongPlayFileQueryDao {
 	 */
 	public List<SongPlayFile> listAliyunToUpload(int start)throws Exception;
 	/**
-	 * 需要上传的文件总数
+	 * 查询歌曲需要上传的总数
 	 * @return
 	 * @throws Exception
 	 */
 	public int listFilesToUploadCount()throws Exception;
 	/**
-	 * 所有需要上传的文件
+	 * 查询需要上传的歌曲,每次获取100条
 	 * @return
 	 * @throws Exception
 	 */
