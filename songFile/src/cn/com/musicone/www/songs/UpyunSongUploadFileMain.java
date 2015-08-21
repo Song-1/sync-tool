@@ -7,8 +7,10 @@ import cn.com.musicone.www.oss.aliyun.multipart.MultipartLocalFileUpload;
 import cn.com.musicone.www.oss.upyun.utils.UpYun;
 import cn.com.musicone.www.songs.service.SongPlayFileService;
 import cn.com.musicone.www.songs.service.impl.SongPlayFileServiceImpl;
+
 import com.song1.www.songs.pojo.SongPlayFile;
 import com.test.www.oss.FileMultipartBucketDemo;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,11 +44,11 @@ public class UpyunSongUploadFileMain {
 	}
 
 	public static void uploadDataTimer() {
-		Timer timer = new Timer("TIMER-UPLOADFILE-SONG");
+		Timer timer = new Timer("TIMER-UPYUN-CHECK-SONG");
 		timer.schedule(new TimerTask() {
 			public void run() {
 				try {
-					UpyunSongUploadFileMain.uploadFile();
+					UpyunSongUploadFileMain.upyunFileCheck();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -53,12 +56,19 @@ public class UpyunSongUploadFileMain {
 		}, 0L, SongsConstants.UPLOAD_FILE_PERIOD_TIMES);
 	}
 
-	public static void uploadFile() {
+	/**
+	 * 
+	 * 又拍云文件检查
+	 *@author huwei
+	 * 2015年8月21日
+	 *
+	 */
+	public static void upyunFileCheck() {
 		List files = null;
 		while (true) {
 			if (hasDataToDo()) {
 				try {
-					files = songPlayFileService.listFiles();
+					files = songPlayFileService.listUpYunFiles(0);
 				} catch (Exception e) {
 				}
 
@@ -74,6 +84,14 @@ public class UpyunSongUploadFileMain {
 		}
 	}
 
+	/**
+	 * 查询又拍云是否有文件需要检查
+	 * 
+	 *@author huwei
+	 * 2015年8月21日
+	 *
+	 *@return
+	 */
 	public static boolean hasDataToDo() {
 		try {
 			int counts = songPlayFileService.listUploadDataCounts();
@@ -103,12 +121,12 @@ public class UpyunSongUploadFileMain {
 				continue;
 			}
 			String localPath = songPlayFile.getLocalPath();
-			localPath = localPath.replace("I:/upyun/", "H:/");
+//			localPath = localPath.replace("I:/upyun/", "H:/");
 			songPlayFile.setLocalPath(localPath);
 			if (StringUtil.isBlank(localPath)) {
 				logger.debug("文件上传失败,本地路径为空 ::: " + songPlayFile.getAliyunKey());
 			} else
-				uploadFileToOSS(songPlayFile);
+				checkFile(songPlayFile);
 		}
 	}
 
@@ -153,48 +171,63 @@ public class UpyunSongUploadFileMain {
 		FileMultipartBucketDemo.UploadMultipartTask(songPlayFile);
 	}
 
-	public static void uploadFileToOSS(SongPlayFile songPlayFile) {
+	/**
+	 * 
+	 * 
+	 *@author huwei
+	 * 2015年8月21日
+	 *
+	 *@param songPlayFile
+	 */
+	public static void checkFile(SongPlayFile songPlayFile) {
 		if (songPlayFile == null)
 			return;
 		try {
 			String remark = null;
-			File uploadFile = null;
+//			File uploadFile = null;
 			String key = songPlayFile.getAliyunKey();
 			if (StringUtil.isBlank(key)) {
 				remark = "文件上传失败,阿里云路径为空";
-				songPlayFile.setStatus(4);
-				songPlayFile.setBak1(remark);
-				songPlayFileService.updateFileStatus(songPlayFile);
+//				songPlayFile.setStatus(4);
+//				songPlayFile.setBak1(remark);
+//				songPlayFileService.updateFileStatus(songPlayFile);
+				return;
 			}
 
-			upyunUpload(songPlayFile, key);
+			upyunCheck(songPlayFile, key);
 		} catch (Exception e) {
 			logger.error("处理文件失败::: " + songPlayFile.getAliyunKey());
 			logger.error(e.getMessage(), e);
 		}
 	}
 
-	private static void upyunUpload(SongPlayFile songPlayFile, String key)
+	
+	private static boolean upyunCheck(SongPlayFile songPlayFile, String key)
 			throws IOException {
 		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME,
 				UpYun.OPERATOR_PWD);
-		Map map = upyun.getFileInfo(key);
-		if (map != null)
-			return;
-		if ("upyun".equalsIgnoreCase(songPlayFile.getOssType())) {
-			uploadToUpaiyun(songPlayFile, key);
-			logger.debug("又拍云文件 [  key ::::" + key + " ]   上传失败   ");
-			return;
-		}
-
-		logger.debug("又拍云文件 [  key ::::" + key + " ]   上传成功    ");
-		updateUpyunFiles.add(Integer.valueOf(songPlayFile.getId()));
-
-		songPlayFile.setStatus(3);
-
-		return;
+		Map<String, String> map = upyun.getFileInfo(key);
+		if (map == null){
+			System.out.println("又拍云没有这个文件:" + key);		
+			return false;
+		}else if (map.get("type") != null && map.get("size") !=null && map.get("date") != null) {
+			logger.debug("又拍云文件 [  key ::::" + key + " ]   已上传    ");
+			updateUpyunFiles.add(Integer.valueOf(songPlayFile.getId()));
+			return true;		
+	}
+		return false;
 	}
 
+	/**
+	 * 
+	 * 上传到又拍云文件
+	 *@author huwei
+	 * 2015年8月21日
+	 *
+	 *@param songPlayFile
+	 *@param key
+	 *@throws IOException
+	 */
 	private static void uploadToUpaiyun(SongPlayFile songPlayFile, String key)
 			throws IOException {
 		long fileSize = songPlayFile.getFileSize();
@@ -205,6 +238,30 @@ public class UpyunSongUploadFileMain {
 			uploadbigFile(songPlayFile);
 		else
 			uploadFile(key, songPlayFile.getLocalPath());
+	}
+	
+	
+	/**
+	 * 
+	 * 上传到又拍云文件
+	 *@author huwei
+	 * 2015年8月21日
+	 *
+	 *@param songPlayFile
+	 *@param key
+	 *@throws IOException
+	 */
+	private static boolean uploadCheckFile(SongPlayFile songPlayFile, String key)
+			throws IOException {
+		long fileSize = songPlayFile.getFileSize();
+		if (fileSize == 0L) {
+			fileSize = new File(songPlayFile.getLocalPath()).length();
+		}
+		if (fileSize >= 20000000L)
+			uploadbigFile(songPlayFile);
+		else
+			uploadFile(key, songPlayFile.getLocalPath());
+		return true;
 	}
 
 	private static void dealFile(SongPlayFile songPlayFile) throws Exception,

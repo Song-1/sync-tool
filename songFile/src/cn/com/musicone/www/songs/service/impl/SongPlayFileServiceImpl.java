@@ -43,7 +43,8 @@ public class SongPlayFileServiceImpl implements SongPlayFileService{
 
 	@Override
 	public int listUploadDataCounts() throws Exception {
-		return getDao().listFilesToUploadCount();
+		List<SongPlayFile> listUpYunFiles = getDao().listUpYunFiles(0);
+		return listUpYunFiles.size();
 	}
 	
 	@Override
