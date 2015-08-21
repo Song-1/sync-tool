@@ -14,6 +14,7 @@ import com.test.www.oss.FileMultipartBucketDemo;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,7 @@ public class UpyunSongUploadFileMain {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			SongsConstants.setPeriodTimes();
 		}
 		return false;
 	}
@@ -240,19 +242,34 @@ public class UpyunSongUploadFileMain {
 				UpYun.OPERATOR_PWD);
 		Map<String, String> map = upyun.getFileInfo(key);
 		if (map == null){
-			logger.debug("又拍云文件 [  key ::::" + key + " ]   开始上传    ");
 			if(uploadCheckFile(songPlayFile,key)){
-				logger.debug("又拍云文件 [  key ::::" + key + " ]   上传成功    ");
 				return true;
 			}else{
-				logger.debug("又拍云文件 [  key ::::" + key + " ]   上传失败   ");
-				return false;
+				logger.debug("又拍云文件 [  key ::::" + key + " ]   上传失败   重试一次 ");
+				return upyunCheck1(songPlayFile, key);
 			}
 		}else if (map.get("type") != null && map.get("size") !=null && map.get("date") != null) {
-			logger.debug("又拍云文件 [  key ::::" + key + " ]   已上传    ");
 			updateUpyunFiles.add(Integer.valueOf(songPlayFile.getId()));
-			return true;		
+			return true;
+		}
+		return false;
 	}
+	
+	
+	private static boolean upyunCheck1(SongPlayFile songPlayFile, String key)
+			throws IOException {
+		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME,
+				UpYun.OPERATOR_PWD);
+		key = key.replace(" ", "%20");
+		Map<String, String> map = upyun.getFileInfo(key);
+		if (map == null) {
+			logger.debug("又拍云(重试)没有这个文件:" + key);
+		} else if (map.get("type") != null && map.get("size") != null
+				&& map.get("date") != null) {
+			logger.debug("又拍云文件 [  key ::::" + key + " ]   已上传   (重试OK) ");
+			updateUpyunFiles.add(Integer.valueOf(songPlayFile.getId()));
+			return true;
+		}
 		return false;
 	}
 		
