@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.song1.www.songs.pojo.SongPlayFile;
 
+import cn.com.musicone.www.base.utils.FileUtils;
 import cn.com.musicone.www.oss.upyun.listener.CompleteListener;
 import cn.com.musicone.www.oss.upyun.listener.ProgressListener;
 import cn.com.musicone.www.oss.upyun.main.UploaderManager;
@@ -143,17 +144,20 @@ public class FileMultipartBucketDemo {
 						long times) {
 
 					// do something...
-					System.out.println("trans:" + transferedBytes + "; total:" + totalBytes);
+					float trans = FileUtils.convertFileSizem(transferedBytes);
+					float total = FileUtils.convertFileSizem(totalBytes);
+					System.out.println("trans:" + trans + "MB; total:" + total + "MB");
 					double  p3  =  Double.parseDouble(String.valueOf(transferedBytes))/Double.parseDouble(String.valueOf(totalBytes));
-					System.out.println(p3);
+//					System.out.println(p3);
 					NumberFormat nf  =  NumberFormat.getPercentInstance();
 					nf.setMinimumFractionDigits(2);
 					System.out.println(nf.format(p3));
-					double p4 = Double.parseDouble(String.valueOf(transferedBytes))/Double.parseDouble(String.valueOf(times));
-					System.out.println(p4);
+					long t = times/1000;
+					double p4 = Double.parseDouble(String.valueOf(transferedBytes))/Double.parseDouble(String.valueOf(t));
+//					System.out.println(p4);
 					NumberFormat nf1  =  NumberFormat.getPercentInstance();
 					nf1.setMinimumFractionDigits(2);
-					System.out.println(nf.format(p4));
+					System.out.println(nf.format(p4) + "MB/s");
 				
 					
 				}

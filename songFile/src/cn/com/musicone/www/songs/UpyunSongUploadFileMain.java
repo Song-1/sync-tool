@@ -1,5 +1,16 @@
 package cn.com.musicone.www.songs;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cn.com.musicone.www.base.utils.StringUtil;
 import cn.com.musicone.www.mybatis.MybatisUtil;
 import cn.com.musicone.www.oss.aliyun.AliyunOSSUtil;
@@ -10,19 +21,6 @@ import cn.com.musicone.www.songs.service.impl.SongPlayFileServiceImpl;
 
 import com.song1.www.songs.pojo.SongPlayFile;
 import com.test.www.oss.FileMultipartBucketDemo;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class UpyunSongUploadFileMain {
 	protected static final Logger logger = LogManager
@@ -168,36 +166,83 @@ public class UpyunSongUploadFileMain {
 		return (result) ? " 成功" : " 失败";
 	}
 
+	/**
+	 * 又拍云文件是否存在
+	 * @param key
+	 * @return
+	 */
 	private static boolean isExistOss(String key) {
 		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME,
 				UpYun.OPERATOR_PWD);
-		Map map = upyun.getFileInfo(key);
-
-		return map != null;
+		return upyun.getFileInfo(key) != null;
 	}
 
-	public static void uploadFile(String key, String localfilePath)
+	/**
+	 * 上传文件
+	 * @param key
+	 * @param songPlayFile
+	 * @throws IOException
+	 */
+	public static void uploadFile(SongPlayFile songPlayFile)
 			throws IOException {
 		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME,
 				UpYun.OPERATOR_PWD);
-
-		String filePath = "/" + key;
-
-		File file4 = new File(localfilePath);
+		String key = songPlayFile.getAliyunKey();
+		if (key != null && !key.startsWith("/")) {
+			key = "/" + key;
+		}
+		String localPath = songPlayFile.getLocalPath();
+		File file4 = new File(localPath);
 		if (!file4.exists()) {
-			System.out.println("上传 " + filePath + ":" + localfilePath + "失败");
+			logger.debug("uploadFile本地文件不存在： " + localPath + "(重试一次)");
+			reUploadFile(songPlayFile);
 			return;
 		}
 
-		boolean existOss = isExistOss(filePath);
+		boolean existOss = isExistOss(key);
 		if (existOss) {
-			System.out.println("上传 " + filePath + ":" + localfilePath + "已经存在");
+			logger.debug("上传文件已经存在： " + localPath);
 			return;
 		}
 
 		upyun.setContentMD5(UpYun.md5(file4));
-		boolean result4 = upyun.writeFile(filePath, file4, true);
-		System.out.println("上传 " + filePath + isSuccess(result4));
+		upyun.setDebug(true);
+		boolean result4 = upyun.writeFile(key, file4, true);
+		logger.debug("上传 " + key + isSuccess(result4));
+	}
+	
+	
+	/**
+	 * 上传文件
+	 * @param key
+	 * @param songPlayFile
+	 * @throws IOException
+	 */
+	public static void reUploadFile(SongPlayFile songPlayFile)
+			throws IOException {
+		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME,
+				UpYun.OPERATOR_PWD);
+		String key = songPlayFile.getAliyunKey();
+		if (key  != null && !key.startsWith("/")) {
+			key = "/" + key;
+		}
+		String localPath = songPlayFile.getLocalPath();
+		localPath = localPath.replace("%20", " ");
+		File file4 = new File(localPath);
+		if (!file4.exists()) {
+			logger.debug("uploadFile本地文件不存在： " + localPath);
+			return;
+		}
+
+		boolean existOss = isExistOss(key);
+		if (existOss) {
+			logger.debug("上传文件已经存在： " + localPath);
+			return;
+		}
+
+		upyun.setContentMD5(UpYun.md5(file4));
+		boolean result4 = upyun.writeFile(key, file4, true);
+		logger.debug("上传 " + key + isSuccess(result4));
 	}
 
 	public static void uploadbigFile(SongPlayFile songPlayFile)
@@ -297,7 +342,7 @@ public class UpyunSongUploadFileMain {
 		if (fileSize >= 20000000L){
 			uploadbigFile(songPlayFile);
 		}else{
-			uploadFile(key, localPath);
+			uploadFile(songPlayFile);
 		}
 		return true;
 	}
@@ -335,7 +380,7 @@ public class UpyunSongUploadFileMain {
 			if (fileSize >= 200000000L)
 				uploadbigFile(songPlayFile);
 			else {
-				uploadFile(key, songPlayFile.getLocalPath());
+				uploadFile(songPlayFile);
 			}
 			logger.debug("又拍云文件 [  key ::::" + key + " ]   上传失败   ");
 			return;
