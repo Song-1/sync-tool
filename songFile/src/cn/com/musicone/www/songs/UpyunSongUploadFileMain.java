@@ -242,12 +242,8 @@ public class UpyunSongUploadFileMain {
 				UpYun.OPERATOR_PWD);
 		Map<String, String> map = upyun.getFileInfo(key);
 		if (map == null){
-			if(uploadCheckFile(songPlayFile,key)){
-				return true;
-			}else{
 				logger.debug("又拍云文件 [  key ::::" + key + " ]   上传失败   重试一次 ");
 				return upyunCheck1(songPlayFile, key);
-			}
 		}else if (map.get("type") != null && map.get("size") !=null && map.get("date") != null) {
 			updateUpyunFiles.add(Integer.valueOf(songPlayFile.getId()));
 			return true;
@@ -264,6 +260,7 @@ public class UpyunSongUploadFileMain {
 		Map<String, String> map = upyun.getFileInfo(key);
 		if (map == null) {
 			logger.debug("又拍云(重试)没有这个文件:" + key);
+			return uploadCheckFile(songPlayFile,key);
 		} else if (map.get("type") != null && map.get("size") != null
 				&& map.get("date") != null) {
 			logger.debug("又拍云文件 [  key ::::" + key + " ]   已上传   (重试OK) ");
@@ -286,18 +283,21 @@ public class UpyunSongUploadFileMain {
 	private static boolean uploadCheckFile(SongPlayFile songPlayFile, String key)
 			throws IOException {
 		long fileSize = songPlayFile.getFileSize();
-		File localFile =  new File(songPlayFile.getLocalPath());
+		String localPath = songPlayFile.getLocalPath();
+//		localPath = localPath.replace("I:/", "H:/");
+//		songPlayFile.setLocalPath(localPath);
+		File localFile =  new File(localPath);
 		if (fileSize == 0L) {
 			fileSize = localFile.length();
 		}		
 		if (!localFile.exists()){
-			System.out.println("本地文件不存在");
+			System.out.println("本地文件不存在:" + localFile);
 			return false;
 		}
 		if (fileSize >= 20000000L){
 			uploadbigFile(songPlayFile);
 		}else{
-			uploadFile(key, songPlayFile.getLocalPath());
+			uploadFile(key, localPath);
 		}
 		return true;
 	}
