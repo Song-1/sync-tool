@@ -37,6 +37,9 @@ public class SongFormBean extends BaseFormBean {
 	////新增(2015-08-25)
 	private int orbitNum;
 	
+	private String songAlias;
+	
+	
 	public int getOrbitNum() {
 		return orbitNum;
 	}
@@ -123,5 +126,21 @@ public class SongFormBean extends BaseFormBean {
 
 	public void setFiles(List<SongFormFileBean> files) {
 		this.files = files;
+	}
+
+	public String getFileid() {
+		return fileid;
+	}
+
+	public void setFileid(String fileid) {
+		this.fileid = fileid;
+	}
+
+	public String getSongAlias() {
+		return songAlias;
+	}
+
+	public void setSongAlias(String songAlias) {
+		this.songAlias = songAlias;
 	}
 }
