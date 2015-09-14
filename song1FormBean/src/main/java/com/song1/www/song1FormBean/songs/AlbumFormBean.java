@@ -39,16 +39,18 @@ public class AlbumFormBean extends BaseFormBean{
 	private int hitCounts;
 	////新增(2015-07-16)
 	private String albumSource;
+	////新增(2015-08-06)
+	private String companyId;
 	
-	public String getHitCounts() {
-		return albumSource;
+	public int getHitCounts() {
+		return hitCounts;
 	}
 
 	public void setAlbumSource(String albumSource) {
 		this.albumSource = albumSource;
 	}
 	
-	public int getAlbumSource() {
+	public String getAlbumSource() {
 		return albumSource;
 	}
 
@@ -167,5 +169,15 @@ public class AlbumFormBean extends BaseFormBean{
 	public void setSongs(List<AlbumSongFormBean> songs) {
 		this.songs = songs;
 	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+
+
 
 }

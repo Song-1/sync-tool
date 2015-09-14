@@ -21,6 +21,7 @@ public class FmAreaRadioFormBean extends BaseFormBean{
 	private int id;
 	private int area_pid;
 	private int area_id;
+	private int area_sid;
 	private int seat;
 	public int getId() {
 		return id;
@@ -45,5 +46,11 @@ public class FmAreaRadioFormBean extends BaseFormBean{
 	}
 	public void setSeat(int seat) {
 		this.seat = seat;
+	}
+	public int getArea_sid() {
+		return area_sid;
+	}
+	public void setArea_sid(int area_sid) {
+		this.area_sid = area_sid;
 	}
 }

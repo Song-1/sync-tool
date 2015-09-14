@@ -29,7 +29,15 @@ public class SongListFormBean extends BaseFormBean{
 	private List<SongListSongsFormBean> songs;
 	private List<SongListTagFormBean> tags;
 	private String remark;
+	//更新于2015-08-15
+	private int hot;
 	
+	public int getHot() {
+		return hot;
+	}
+	public void setHot(int hot) {
+		this.hot = hot;
+	}
 	public String getRemark() {
 		return remark;
 	}

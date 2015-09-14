@@ -25,10 +25,10 @@ public class FmRadioFormBean extends BaseFormBean{
 	private String img;
 	private List<FmAreaRadioFormBean> areas;
 	private List<FmRadioPlayList> playlists;
-	//更新于2015-07-27
-	private String source;     //电台来源
-	private String description;//电台描述
-	private String remark;     //电台备注
+	private String labelType;
+	private String source;
+	private String description;
+	private String remark;
 	
 	public int getId() {
 		return id;
@@ -77,5 +77,11 @@ public class FmRadioFormBean extends BaseFormBean{
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getLabelType() {
+		return labelType;
+	}
+	public void setLabelType(String labelType) {
+		this.labelType = labelType;
 	}
 }
