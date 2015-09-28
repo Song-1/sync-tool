@@ -38,8 +38,8 @@ public class SongFormBean extends BaseFormBean {
 	private int orbitNum;
 	
 	private String songAlias;
-	
-	
+	//区别歌曲:0是未知,1是享CD，2是醉时光 默认为1
+	private int diffSong;
 	public int getOrbitNum() {
 		return orbitNum;
 	}
@@ -142,5 +142,13 @@ public class SongFormBean extends BaseFormBean {
 
 	public void setSongAlias(String songAlias) {
 		this.songAlias = songAlias;
+	}
+
+	public int getDiffSong() {
+		return diffSong;
+	}
+
+	public void setDiffSong(int diffSong) {
+		this.diffSong = diffSong;
 	}
 }
