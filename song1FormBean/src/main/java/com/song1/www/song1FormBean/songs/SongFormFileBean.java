@@ -25,6 +25,7 @@ public class SongFormFileBean extends BaseFormBean {
 	private String songListId;
 	private String songListName;
 	private String singerName;
+	private String diffSong;
 	// // 歌曲
 	private int album;
 	private int singer;
@@ -196,6 +197,14 @@ public class SongFormFileBean extends BaseFormBean {
 
 	public void setSingerName(String singerName) {
 		this.singerName = singerName;
+	}
+
+	public String getDiffSong() {
+		return diffSong;
+	}
+
+	public void setDiffSong(String diffSong) {
+		this.diffSong = diffSong;
 	}
 
 
