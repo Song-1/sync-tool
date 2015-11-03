@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.com.musicone.www.songs.dao.mybatis.EducationFileQueryDao">
+	<sql id="educationFileData">
+		edufile.id as id,
+		edufile.name as name,
+		edufile.md5 as md5,
+		edufile.aliyun_key as aliyunKey,
+		edufile.local_path as localPath,
+		edufile.type as type,
+		edufile.resource_id as resourceId,
+		edufile.file_info as fileInfo,
+		edufile.suffix as suffix,
+		edufile.status as status,
+		edufile.oss_type as ossType,
+		edufile.file_size as fileSize
+	</sql>
+
+	<select id="listFilesToUploadCount" resultType="int">
+		select
+		count(edufile.id)
+		from ct_edu_file edufile
+		where edufile.status = 7
+	</select>
+	
+
+	<select id="listFilesToUpload" resultType="EducFile">
+		select
+		<include refid="educationFileData" />
+		from ct_edu_file edufile
+		where edufile.status = 7
+		order by
+		edufile.oss_type asc
+		limit 0,100
+	</select>
+
+	<!-- 阿里云文件查询 -->
+	<select id="listAliyunToUpload" parameterType="int" resultType="EducFile">
+		select
+		<include refid="educationFileData" />
+		from ct_edu_file edufile
+		where edufile.status = 7
+		and edufile.oss_type ='aliyun'
+		limit #{start},1000
+	</select>
+	
+	<select id="listAliyunFilesCount" resultType="int"  >
+		select
+		count(edufile.id) as ids from ct_edu_file edufile
+		where edufile.status =7 and edufile.oss_type = 'aliyun'
+	</select>
+	
+	<!-- 又拍云文件查询 -->
+	<select id="listUpYunFilesCount" resultType="int">
+		select
+		count(edufile.id) as ids from ct_edu_file edufile
+		where edufile.status =7 and edufile.oss_type = 'upyun'
+	</select>
+
+	<select id="listUpYunFiles" parameterType="int" resultType="EducFile">
+		select
+		<include refid="educationFileData" />
+		from ct_edu_file edufile
+		where edufile.status = 7
+		and edufile.oss_type = 'upyun'
+		limit #{start},1000
+	</select>
+
+	<update id="updateFileStatus" parameterType="EducFile">
+		update ct_edu_file edufile
+		<set>
+			edufile.status = #{status}
+		</set>
+		where edufile.id = #{id}
+	</update>
+
+	<update id="updateUpyunFileStatus" parameterType="java.util.List">
+		update ct_edu_file edufile set edufile.status = 3 where edufile.id in
+		<foreach collection="list" item="item" index="index" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
+	</update>
+
+
+
+
+</mapper>
