@@ -7,6 +7,7 @@
 		<typeAlias alias="BookAudioNew" type="com.song1.www.book.pojo.BookAudioNew" />
 		<typeAlias alias="ImageModel" type="cn.com.musicone.www.images.model.ImageModel" />
 		<typeAlias alias="SongModel" type="cn.com.musicone.www.images.model.SongModel" />
+		<typeAlias alias="EducFile" type="com.song1.www.education.pojo.EducFile" />
 		<typeAlias alias="CountModel" type="cn.com.musicone.www.counts.model.CountModel" />
 		<typeAlias alias="SearchReqLogModel" type="cn.com.musicone.www.counts.model.SearchReqLogModel" />
 		<typeAlias alias="FileLocalPathModel" type="cn.com.musicone.www.files.model.FileLocalPathModel" />
@@ -24,9 +25,9 @@
 			</dataSource>
 			<!-- <dataSource type="POOLED">
 				<property name="driver" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://127.0.0.1:3306/music_test" />
-				<property name="username" value="root" />
-				<property name="password" value="root" />
+				<property name="url" value="jdbc:mysql://127.0.0.1:3306/song1_develop" />
+				<property name="username" value="musictest" />
+				<property name="password" value="123456" />
 			</dataSource> -->
 		</environment>
 	</environments>
@@ -34,6 +35,7 @@
 	<mappers>
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/SongPlayFileQueryDaoImpl.xml" />
 		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/BookAudioQueryDaoImpl.xml" />
+		<mapper resource="cn/com/musicone/www/songs/dao/mybatis/impl/EducationFileQueryDaoImpl.xml" />
 		<mapper resource="cn/com/musicone/www/images/dao/mybatis/impl/ImageQueryDaoImpl.xml" />
 		<mapper resource="cn/com/musicone/www/counts/dao/mybatis/impl/CountQueryDaoImpl.xml"/>
 		<mapper resource="cn/com/musicone/www/files/dao/mybatis/impl/FileQueryDaoImpl.xml"/>
