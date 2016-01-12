@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.com.musicone.www.songs.dao.mybatis.PureSongFileQueryDao">
+	<sql id="pureSongFileData">
+		pureSong.id as id,
+		pureSong.song_name as songName,
+		pureSong.create_time as createTime,
+		pureSong.local_path as localPath,
+		pureSong.`key` as `key`,
+		pureSong.md5 as md5,
+		pureSong.file_size as fileSize,
+		pureSong.file_name as fileName,
+		pureSong.suffix as suffix,
+		pureSong.oss_type as ossType,
+		pureSong.rate as rate,
+		pureSong.file_status as fileStatus,
+		pureSong.local_path1 as localPath1,
+		pureSong.key1 as key1,
+		pureSong.md51 as md51,
+		pureSong.file_size1 as fileSize1,
+		pureSong.file_name1 as fileName1,
+		pureSong.suffix1 as suffix1,
+		pureSong.oss_type1 as ossType1,
+		pureSong.rate1 as rate1,
+		pureSong.file_status1 as fileStatus1
+	</sql>
+	
+	<select id="listFilesToUploadCount" resultType="int">
+		select
+		count(pureSong.id)
+		from ct_pur_song pureSong
+		where puresong.file_status = 7 or puresong.file_status1 = 7
+	</select>
+	
+
+	<select id="listFilesToUpload" resultType="PurSong">
+		select
+		<include refid="pureSongFileData" />
+		from ct_pur_song pureSong
+		where puresong.file_status = 7 or puresong.file_status1 = 7
+		order by
+		pureSong.create_time asc
+		limit 0,100
+	</select>
+
+	<!-- 阿里云文件查询 -->
+	<select id="listAliyunToUpload" parameterType="int" resultType="PurSong">
+		select
+		<include refid="pureSongFileData" />
+		from ct_pur_song pureSong
+		where (puresong.file_status = 7 or puresong.file_status1 = 7)
+		and (pureSong.oss_type ='aliyun' or pureSong.oss_type1 ='aliyun' or pureSong.oss_type ='阿里云' or pureSong.oss_type1 ='阿里云')
+		limit #{start},1000
+	</select>
+	
+	<select id="listAliyunFilesCount" resultType="int"  >
+		select
+		count(pureSong.id) as ids from ct_pur_song pureSong
+		where (puresong.file_status = 7 or puresong.file_status1 = 7)
+		and (pureSong.oss_type ='aliyun' or pureSong.oss_type1 ='aliyun' or pureSong.oss_type ='阿里云' or pureSong.oss_type1 ='阿里云')
+	</select>
+	
+	<!-- 又拍云文件查询 -->
+	<select id="listUpYunFilesCount" resultType="int">
+		select
+		count(pureSong.id) as ids from ct_pur_song pureSong
+		where (puresong.file_status = 7 or puresong.file_status1 = 7)
+		and (pureSong.oss_type ='upyun' or pureSong.oss_type1 ='upyun' or pureSong.oss_type ='又拍云' or pureSong.oss_type1 ='又拍云')
+	</select>
+
+	<select id="listUpYunFiles" parameterType="int" resultType="PurSong">
+		select
+		<include refid="pureSongFileData" />
+		from ct_pur_song pureSong
+		where (puresong.file_status = 7 or puresong.file_status1 = 7)
+		and (pureSong.oss_type ='upyun' or pureSong.oss_type1 ='upyun' or pureSong.oss_type ='又拍云' or pureSong.oss_type1 ='又拍云')
+		limit #{start},1000
+	</select>
+
+	<update id="updateFileStatus" parameterType="PurSong">
+		update ct_pur_song pureSong
+		<set>
+			pureSong.file_status = #{fileStatus}
+		</set>
+		where pureSong.id = #{id}
+	</update>
+	
+	<update id="updateFileStatus1" parameterType="PurSong">
+		update ct_pur_song pureSong
+		<set>
+			pureSong.file_status1 = #{fileStatus1}
+		</set>
+		where pureSong.id = #{id}
+	</update>
+
+	<update id="updateUpyunFileStatus" parameterType="java.util.List">
+		update ct_edu_file edufile set edufile.status = 3 where edufile.id in
+		<foreach collection="list" item="item" index="index" open="("
+			close=")" separator=",">
+			#{item}
+		</foreach>
+	</update>
+
+</mapper>
