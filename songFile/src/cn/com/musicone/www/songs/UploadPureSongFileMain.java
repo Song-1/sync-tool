@@ -105,9 +105,9 @@ public class UploadPureSongFileMain {
 	 */
 	public static void uploadFileToOSS(PurSong purSong) throws Exception {
 		if(purSong != null){
-			if(!StringUtil.isBlank(purSong.getKey()) && purSong.getFileStatus() == 7){
+			if(!StringUtil.isBlank(purSong.getAliyunKey()) && purSong.getFileStatus() == 7){
 				String remark = null;
-				String key = purSong.getKey();
+				String key = purSong.getAliyunKey();
 				if(!StringUtil.isBlank(key)){
 					if (SongsConstants.OSS_TYPE_UPYUN.equalsIgnoreCase(purSong.getOssType())) {
 						try {
@@ -163,10 +163,10 @@ public class UploadPureSongFileMain {
 	 * @throws Exception
 	 */
 	private static boolean songUploadAliyun(PurSong purSong) throws Exception{
-		if(!StringUtil.isBlank(purSong.getKey()) && purSong.getFileStatus()==7){
+		if(!StringUtil.isBlank(purSong.getAliyunKey()) && purSong.getFileStatus()==7){
 			String bucket = AliyunOSSUtil.getDeafultBucket();
 			String localPath = purSong.getLocalPath();
-			String key = purSong.getKey();
+			String key = purSong.getAliyunKey();
 			LogUtil.debug(logger,key);
 			File uploadFile = new File(localPath);
 			MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(bucket, key, purSong.getMd5(), uploadFile);
@@ -212,7 +212,7 @@ public class UploadPureSongFileMain {
 	private static boolean songUploadAliyun(PurSong purSong, File uploadFile,
 			String key) throws Exception{
 		String bucket = AliyunOSSUtil.getDeafultBucket();
-		if(!StringUtil.isBlank(purSong.getKey()) && purSong.getFileStatus()==7){
+		if(!StringUtil.isBlank(purSong.getAliyunKey()) && purSong.getFileStatus()==7){
 			MultipartLocalFileUpload partUpload = new MultipartLocalFileUpload(bucket, key, purSong.getMd5(), uploadFile);
 			if(partUpload.upload()){
 				purSong.setFileStatus(3); //// OK
@@ -242,7 +242,7 @@ public class UploadPureSongFileMain {
 		UpYun.init();
 		UpYun upyun = new UpYun(UpYun.BUCKET_NAME, UpYun.OPERATOR_NAME, UpYun.OPERATOR_PWD);
 		Map<String,String> map = upyun.getFileInfo(key);//文件不存在
-		if(!StringUtil.isBlank(purSong.getKey()) && purSong.getFileStatus()==7){
+		if(!StringUtil.isBlank(purSong.getAliyunKey()) && purSong.getFileStatus()==7){
 			if(map == null){
 				logger.debug("又拍云音乐文件："+ key + " 不存在则暂时不处理");
 				return;
