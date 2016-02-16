@@ -152,6 +152,9 @@ public class UploadEducationFileMain {
 	 */
 	private static boolean songUploadAliyun(EducFile educFile) throws Exception{
 		String bucket = AliyunOSSUtil.getDeafultBucket();
+		if ((educFile.getSuffix().equals("jpg")) || (educFile.getSuffix().equals("png")) || (educFile.getSuffix().equals("JPG")) || (educFile.getSuffix().equals("PNG"))) {
+			bucket = "songimage";
+	    }
 		String localPath = educFile.getLocalPath();
 		String key = educFile.getAliyunKey();
 		LogUtil.debug(logger,key);
@@ -165,6 +168,8 @@ public class UploadEducationFileMain {
 			return true;
 		}else{
 			LogUtil.debug(logger, "key:" + key + "上传失败");
+			educFile.setStatus(4); //// OK
+			eductionFileService.updateFileStatus(educFile);
 			return false;
 		}
 	}
